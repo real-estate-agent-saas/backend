@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanType {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+// Modelo de Usuario no banco de dados
+model User {
+  // Dados para Login
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique // Email para login e interno
+  password String
+
+  // Dados para exibição pública
+  publicEmail  String? // Email para exibição pública (opcional)
+  whatsapp     String?
+  phone        String?
+  instagram    String?
+  facebook     String?
+  linkedin     String?
+  profileImage String?
+  bio          String?
+
+  creci  String? // Registro CRECI
+  gender String? // Masculino, Feminino, Outro
+
+  plan      PlanType  @default(FREE) // Tipo de plano do usuário
+  planStart DateTime? // Quando o plano começou
+  planEnd   DateTime? // Quando o plano termina
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Modelo de Propriedade no banco de dados
+model Property {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+
+  bedroomsMin      Int?
+  bedroomsMax      Int?
+  bathroomsMin     Int?
+  bathroomsMax     Int?
+  parkingSpacesMin Int?
+  parkingSpacesMax Int?
+  areaMin          Float?
+  areaMax          Float?
+  price            Float?
+
+  street       String?
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String?
+  state        String?
+  zipCode      String?
+  region       String?
+
+  featuredImage String?
+  photoGallery  String[]
+  youTubeVideo  String?
+
+  purpose     String?
+  housingType String?
+  isDraft     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
