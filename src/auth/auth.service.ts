@@ -26,7 +26,7 @@ export class AuthService {
 
         // Retorna o token JWT
         return {
-            acess_token: jwtToken,
+            access_token: jwtToken,
         }; 
     }
 

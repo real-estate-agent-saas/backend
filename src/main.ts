@@ -1,17 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true, // Automaticamente converte os dados de entrada para o tipo correto. Ex: se você tem um DTO com um campo do tipo number, o NestJS tentará converter o valor de entrada para number.
-      whitelist: true, // Remove propriedades que não estão no DTO. Isso ajuda a evitar que dados indesejados sejam enviados para o servidor.
-      forbidNonWhitelisted: true, // Lança um erro se propriedades não permitidas forem enviadas. Isso é útil para garantir que apenas os dados esperados sejam processados.
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
       transformOptions: {
-        enableImplicitConversion: true, // Permite a conversão implícita de tipos. Por exemplo, se você tem um DTO com um campo do tipo number e recebe uma string que pode ser convertida para number, o NestJS fará essa conversão automaticamente.
+        enableImplicitConversion: true,
+      },
+      // Customizando a mensagem de erro para BadRequestException. Exibe apenas a primeira mensagem de erro de cada propriedade.
+      exceptionFactory: (errors) => {
+        const formattedErrors = errors.map((err) => {
+          const firstConstraintKey = Object.keys(err.constraints || {})[0];
+          return err.constraints?.[firstConstraintKey];
+        });
+        return new BadRequestException(formattedErrors);
       },
     }),
   );
@@ -24,9 +33,12 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
 
-    // Configuração do Swagger
+  // Configuração do Swagger
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // Ativa o cookie-parser
+  app.use(cookieParser());
 
   // Configuração do CORS
   app.enableCors({
