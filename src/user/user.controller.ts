@@ -17,7 +17,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @IsPublic()
-  @Post()
+  @Post('register')
   @ApiOperation({ summary: 'Cadastra um usuário com Login e Senha' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
