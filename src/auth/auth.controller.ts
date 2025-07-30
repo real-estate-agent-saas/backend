@@ -37,7 +37,7 @@ export class AuthController {
       httpOnly: true,
       secure: false, //process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 2,
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 dias
     });
 
     return { message: 'Login realizado com sucesso' };
@@ -47,8 +47,10 @@ export class AuthController {
   @Post('logout') // Endpoint para logout
   @HttpCode(HttpStatus.OK) // Responde com status 200 OK em vez do padrão 201 Created
   @ApiOperation({ summary: 'Realiza logout removendo o cookie' }) // Descrição da operação
-  async logout(@Res({ passthrough: true }) res: Response) { // Recebe a resposta do Express
-    res.clearCookie('access_token', { // Limpa o cookie de autenticação
+  async logout(@Res({ passthrough: true }) res: Response) {
+    // Recebe a resposta do Express
+    res.clearCookie('access_token', {
+      // Limpa o cookie de autenticação
       httpOnly: true, // Garante que o cookie não é acessível via JavaScript
       secure: false, // Trafego realizado somente com HTTPS
       sameSite: 'strict', // Envia o cookie apenas para requisições que o originou

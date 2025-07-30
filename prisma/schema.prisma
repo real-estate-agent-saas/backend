@@ -14,6 +14,12 @@ enum PlanType {
   ENTERPRISE
 }
 
+enum Gender {
+  Masculino
+  Feminino
+  Outro
+}
+
 // Modelo de Usuario no banco de dados
 model User {
   // Dados para Login
@@ -33,16 +39,25 @@ model User {
   bio          String?
 
   creci  String? // Registro CRECI
-  gender String? // Masculino, Feminino, Outro
-
-  plan      PlanType  @default(FREE) // Tipo de plano do usuário
-  planStart DateTime? // Quando o plano começou
-  planEnd   DateTime? // Quando o plano termina
+  gender Gender? // Masculino, Feminino, Outro
 
   isActive Boolean @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Subscription Subscription[]
+}
+
+model Subscription {
+  id        Int       @id @default(autoincrement())
+  userId    Int // Chave estrangeira para o usuário
+  user      User      @relation(fields: [userId], references: [id]) // Relacionamento com o usuário
+  planType  PlanType  @default(FREE) // Tipo de plano (Padrão é o FREE)
+  startDate DateTime  @default(now()) // Data de início da assinatura
+  endDate   DateTime? // Data de término da assinatura (opcional)
+  isActive  Boolean   @default(true) // Indica se a assinatura está ativa
+  createdAt DateTime  @default(now()) // Data de criação do registro
+  updatedAt DateTime  @updatedAt // Data de atualização do registro
 }
 
 // Modelo de Propriedade no banco de dados
