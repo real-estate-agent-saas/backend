@@ -4,8 +4,7 @@ import {
   Post,
   Body,
   Patch,
-  UseGuards,
-  Req,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,14 +13,12 @@ import { ApiOperation } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
-import { Request } from 'express';
-import { UserPayload } from 'src/auth/models/UserPayload';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Cria um novo usuário com Email e Senha
+  // Creates a new user with email and password
   @IsPublic()
   @Post('create')
   @ApiOperation({ summary: 'Cadastra um usuário com Login e Senha' })
@@ -29,24 +26,24 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  // Atualiza um usuário existente baseado no ID vindo do token do usuário logado
+  // Updates the user based on the current logged in user
   @Patch('update')
   update(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(user.id, updateUserDto);
   }
 
-  // Busca os dados do usuário logado
+  // Get user data based on his ID
   @Get('read')
   @ApiOperation({ summary: 'Busca todos os dados do usuário' })
   read(@CurrentUser() user: User) {
     return this.userService.read(user.id);
   }
 
- 
-  // Busca o usuário logado
-  // @Get('me')
-  // @ApiOperation({ summary: 'Busca o usuário logado' })
-  // getMe(@CurrentUser() user: User) {
-  //   return user;
-  // }
+  // Returns ID, Name and Email of the current user
+  @Get('me')
+  @ApiOperation({ summary: 'Verifica se o token está válido' })
+  getMe(@CurrentUser() user: User) {
+    return user;
+  }
+  
 }

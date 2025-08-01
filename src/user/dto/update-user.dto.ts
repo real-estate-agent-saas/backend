@@ -1,6 +1,15 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsOptional, IsString, IsEmail, IsUrl } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsEmail,
+  IsUrl,
+  IsDateString,
+  IsArray,
+  ArrayUnique,
+  IsInt,
+} from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
@@ -36,10 +45,20 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   bio?: string;
 
   @IsOptional()
+  @IsDateString()
+  careerStartDate?: string;
+
+  @IsOptional()
   @IsString()
   creci?: string;
 
   @IsOptional()
   @IsString()
   gender?: string;
+
+  @IsOptional()
+  @IsArray() // Afirma que specialties é um array
+  @ArrayUnique() // Garante que os valores no array são únicos
+  @IsInt({ each: true }) // Valida que os IDs no array são inteiros
+  specialties?: number[];
 }

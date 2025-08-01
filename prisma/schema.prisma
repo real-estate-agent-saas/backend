@@ -7,20 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum PlanType {
-  FREE
-  BASIC
-  PREMIUM
-  ENTERPRISE
-}
-
 enum Gender {
   Masculino
   Feminino
   Outro
 }
 
-// Modelo de Usuario no banco de dados
+// Modelo de Usuario
 model User {
   // Dados para Login
   id       Int    @id @default(autoincrement())
@@ -29,36 +22,37 @@ model User {
   password String
 
   // Dados para exibição pública
-  publicEmail  String? // Email para exibição pública (opcional)
-  whatsapp     String?
-  phone        String?
-  instagram    String?
-  facebook     String?
-  linkedin     String?
-  profileImage String?
-  bio          String?
+  publicEmail     String? // Email para exibição pública (opcional)
+  whatsapp        String?
+  phone           String?
+  instagram       String?
+  facebook        String?
+  linkedin        String?
+  profileImage    String?
+  bio             String?
+  careerStartDate DateTime?
 
   creci  String? // Registro CRECI
   gender Gender? // Masculino, Feminino, Outro
 
   isActive Boolean @default(true)
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Subscription Subscription[]
+  // Relacionamentos
+  specialties Specialty[] // Especialidades do usuário
+
+  // Gerenciamento de Datas
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Subscription {
-  id        Int       @id @default(autoincrement())
-  userId    Int // Chave estrangeira para o usuário
-  user      User      @relation(fields: [userId], references: [id]) // Relacionamento com o usuário
-  planType  PlanType  @default(FREE) // Tipo de plano (Padrão é o FREE)
-  startDate DateTime  @default(now()) // Data de início da assinatura
-  endDate   DateTime? // Data de término da assinatura (opcional)
-  isActive  Boolean   @default(true) // Indica se a assinatura está ativa
-  createdAt DateTime  @default(now()) // Data de criação do registro
-  updatedAt DateTime  @updatedAt // Data de atualização do registro
+// Modelo de Especialidade
+model Specialty {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  users User[]
 }
+
 
 // Modelo de Propriedade no banco de dados
 model Property {
@@ -96,3 +90,28 @@ model Property {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+
+
+
+
+
+
+// enum PlanType {
+//   FREE
+//   BASIC
+//   PREMIUM
+//   ENTERPRISE
+// }
+// model Subscription {
+//   id        Int       @id @default(autoincrement())
+//   userId    Int // Chave estrangeira para o usuário
+//   user      User      @relation(fields: [userId], references: [id]) // Relacionamento com o usuário
+//   planType  PlanType  @default(FREE) // Tipo de plano (Padrão é o FREE)
+//   startDate DateTime  @default(now()) // Data de início da assinatura
+//   endDate   DateTime? // Data de término da assinatura (opcional)
+//   isActive  Boolean   @default(true) // Indica se a assinatura está ativa
+//   createdAt DateTime  @default(now()) // Data de criação do registro
+//   updatedAt DateTime  @updatedAt // Data de atualização do registro
+// }

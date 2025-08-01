@@ -93,5 +93,8 @@
   "directories": {
     "test": "test"
   },
-  "keywords": []
+  "keywords": [],
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
 }

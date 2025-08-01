@@ -15,6 +15,10 @@ import { IsPublic } from './decorators/is-public.decorator';
 import { LoginDto } from './dto/login.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+//How long the browser keep the token on the cookies
+import { JWT_EXPIRATION_MS  } from './constants/auth.constants';
+
+
 @ApiTags('Auth')
 @Controller()
 export class AuthController {
@@ -35,9 +39,9 @@ export class AuthController {
     // Define o cookie httpOnly
     res.cookie('access_token', access_token, {
       httpOnly: true,
-      secure: false, //process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 dias
+      maxAge: JWT_EXPIRATION_MS,
     });
 
     return { message: 'Login realizado com sucesso' };
