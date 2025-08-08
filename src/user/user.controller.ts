@@ -32,11 +32,18 @@ export class UserController {
     return this.userService.update(user.id, updateUserDto);
   }
 
-  // Get user data based on his ID
+  // Gets user data based on his ID
   @Get('read')
   @ApiOperation({ summary: 'Busca todos os dados do usuário' })
   read(@CurrentUser() user: User) {
     return this.userService.read(user.id);
+  }
+
+  // Gets all specialties
+  @Get('getAllSpecialties')
+  @ApiOperation({ summary: 'Busca todas as especialidades para dispor ao usuário para atualização'})
+  specialties() {
+    return this.userService.getAllSpecialties();
   }
 
   // Returns ID, Name and Email of the current user

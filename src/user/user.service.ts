@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Cria um novo usuário
+  // Creates a new user
   async create(createUserDto: CreateUserDto) {
     const data = {
       ...createUserDto,
@@ -23,34 +23,64 @@ export class UserService {
     };
   }
 
-  // Atualiza um usuário existente baseado no ID vindo do token do usuário logado
+  // Updates the current user based on his ID from the JWT Token
   async update(id: number, updateUserDto: UpdateUserDto) {
     const data: any = { ...updateUserDto };
 
-    // Se a senha for fornecida, faz o hash antes de atualizar
+    // If password is provided, hash it before updating
     if (updateUserDto.password) {
       data.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
+    // If specialties is provided, updates them
+    if (updateUserDto.specialties) {
+      data.specialties = {
+        set: updateUserDto.specialties.map((id) => ({ id })),
+      };
+    }
+
+    //Updates user
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data,
+      include: {
+        specialties: true,
+      },
     });
 
+    // Return the updated data with no password
     return {
       ...updatedUser,
       password: undefined,
     };
   }
 
-  // Busca um usuário pelo ID
+  // Gets all user data
   async read(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
+      include: {
+        specialties: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
-  // Busca um usuário pelo Email
+  // Gets all specialties
+  async getAllSpecialties() {
+    return this.prisma.specialty.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
+  // Searches user by email
   findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },

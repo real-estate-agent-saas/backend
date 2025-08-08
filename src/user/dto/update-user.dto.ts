@@ -57,8 +57,8 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   gender?: string;
 
   @IsOptional()
-  @IsArray() // Afirma que specialties é um array
-  @ArrayUnique() // Garante que os valores no array são únicos
-  @IsInt({ each: true }) // Valida que os IDs no array são inteiros
+  @IsArray()
+  @ArrayUnique() // ensures that array values are unique
+  @IsInt({ each: true }) // Validates that the IDs in the array are integers
   specialties?: number[];
 }
