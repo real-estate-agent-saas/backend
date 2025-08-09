@@ -7,22 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  Masculino
-  Feminino
-  Outro
-}
-
-// Modelo de Usuario
+// ------------------------------------------------------- User Model ------------------------------------------------
 model User {
-  // Dados para Login
+  // Login Data
   id       Int    @id @default(autoincrement())
   name     String
-  email    String @unique // Email para login e interno
+  email    String @unique // Intern email for login
   password String
 
-  // Dados para exibição pública
-  publicEmail     String? // Email para exibição pública (opcional)
+  // Public exibition data
+  publicEmail     String? // Public email for exibition
   whatsapp        String?
   phone           String?
   instagram       String?
@@ -32,86 +26,155 @@ model User {
   bio             String?
   careerStartDate DateTime?
 
-  creci  String? // Registro CRECI
-  gender Gender? // Masculino, Feminino, Outro
+  creci  String?
+  gender Gender?
 
   isActive Boolean @default(true)
 
-  // Relacionamentos
-  specialties Specialty[] // Especialidades do usuário
+  // Relationships
+  specialties Specialty[] // User Specialties M-N (Many users can have many specialties)
+  properties  Property[] // User Properties 1-N (One user can have many properties)
 
-  // Gerenciamento de Datas
+  // Date control
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// Modelo de Especialidade
+enum Gender {
+  MASCULINO
+  FEMININO
+  OUTRO
+}
+
+//------------------------------------------------------ Specialty Model -------------------------------------------
 model Specialty {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  users User[]
+  users User[] // Related to users M-N
 }
 
+//---------------------------------------------------------- Property, Enums and Relationships ----------------------------------------------
 
-// Modelo de Propriedade no banco de dados
 model Property {
-  id          Int     @id @default(autoincrement())
-  title       String
-  description String?
+  id               Int      @id @default(autoincrement())
+  title            String
+  description      String?
+  roomsQty         Int
+  bathroomsQty     Int
+  parkingSpacesQty Int
+  area             Decimal
+  youtubeUrl       String?
+  price            Decimal?
+  coverImage       String?
+  deliveryStatus   String?
+  isFurnished      Boolean?
+  isNearSubway     Boolean?
+  isActive         Boolean  @default(true)
 
-  bedroomsMin      Int?
-  bedroomsMax      Int?
-  bathroomsMin     Int?
-  bathroomsMax     Int?
-  parkingSpacesMin Int?
-  parkingSpacesMax Int?
-  areaMin          Float?
-  areaMax          Float?
-  price            Float?
+  // Enums
+  propertyPurpose  PropertyPurpose?
+  propertyStanding PropertyStanding?
+  propertyType     PropertyType?
+  propertyTypology PropertyTypology?
 
-  street       String?
-  number       String?
-  complement   String?
-  neighborhood String?
-  city         String?
-  state        String?
-  zipCode      String?
-  region       String?
-
-  featuredImage String?
-  photoGallery  String[]
-  youTubeVideo  String?
-
-  purpose     String?
-  housingType String?
-  isDraft     Boolean @default(true)
-
+  // Date Control
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relationships
+  user             User               @relation(fields: [userId], references: [id]) // Relation 1-N (One property belongs to one user)
+  userId           Int
+  address          Address? // Relation 1-1 (One property has one address)
+  propertyGallery  PropertyGallery[] // Relation 1-N (One property can have many images)
+  floorPlanGallery FloorPlanGallery[] // Relation 1-N (One property can have many floor plans)
+  propertyLeisure  Leisure[] // Relation M-N (Many properties can have many leisure options)
 }
 
+enum PropertyType {
+  CASA
+  APARTAMENTO
+}
 
+enum PropertyPurpose {
+  VENDA
+  LOCACAO
+  ARRENDAMENTO
+  TEMPORADA
+  PERMUTA
+  LEILAO
+}
 
+enum PropertyStanding {
+  POPULAR
+  MEDIO_PADRAO
+  ALTO_PADRAO
+}
 
+enum PropertyTypology {
+  STUDIO
+  GARDEN
+  DUPLEX
+  TRIPLEX
+  COBERTURA
+  LOFT
+  KITNET
+  PENTHOUSE
+  FLAT
+  TOWNHOUSE
+  CASA_TERREA
+  SOBRADO
+  CHALET
+  VILA
+  BANGALO
+  CASA_DE_CAMPO
+  FAZENDA
+  SITIO
+  CHACARA
+  GALPAO
+  SALA_COMERCIAL
+  LOJA
+  ANDAR_CORPORATIVO
+  TERRENO
+  LOTEAMENTO
+}
 
+model Address {
+  id           Int     @id @default(autoincrement())
+  street       String
+  number       String?
+  complement   String?
+  neighborhood String
+  zone         String
+  city         String
+  state        String
+  zipCode      String
+  latitude     Float
+  longitude    Float
 
+  property   Property @relation(fields: [propertyId], references: [id]) // Property relation 1-1 (One address belongs to one property)
+  propertyId Int      @unique
+}
 
+model PropertyGallery {
+  id         Int       @id @default(autoincrement())
+  url        String
+  order      Int?
+  property   Property? @relation(fields: [propertyId], references: [id]) // Property relation 1-N (One property can have many images)
+  propertyId Int?
+}
 
-// enum PlanType {
-//   FREE
-//   BASIC
-//   PREMIUM
-//   ENTERPRISE
-// }
-// model Subscription {
-//   id        Int       @id @default(autoincrement())
-//   userId    Int // Chave estrangeira para o usuário
-//   user      User      @relation(fields: [userId], references: [id]) // Relacionamento com o usuário
-//   planType  PlanType  @default(FREE) // Tipo de plano (Padrão é o FREE)
-//   startDate DateTime  @default(now()) // Data de início da assinatura
-//   endDate   DateTime? // Data de término da assinatura (opcional)
-//   isActive  Boolean   @default(true) // Indica se a assinatura está ativa
-//   createdAt DateTime  @default(now()) // Data de criação do registro
-//   updatedAt DateTime  @updatedAt // Data de atualização do registro
-// }
+model FloorPlanGallery {
+  id          Int      @id @default(autoincrement())
+  url         String
+  description String?
+  order       Int?
+  property    Property @relation(fields: [propertyId], references: [id]) // Property relation 1-N (One property can have many floor plans)
+  propertyId  Int
+}
+
+model Leisure {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  properties Property[] // Property relation M-N (Many leisure options can belong to many properties)
+}

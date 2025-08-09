@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,6 +10,12 @@ export class UserService {
 
   // Creates a new user
   async create(createUserDto: CreateUserDto) {
+    const existingUser = await this.findByEmail(createUserDto.email);
+
+    if (existingUser) {
+      throw new BadRequestException('Não foi possível concluir o cadastro.');
+    }
+
     const data = {
       ...createUserDto,
       password: await bcrypt.hash(createUserDto.password, 10),
@@ -19,7 +25,7 @@ export class UserService {
 
     return {
       ...createdUser,
-      password: undefined, // Remove a senha do retorno
+      password: undefined,
     };
   }
 
