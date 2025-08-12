@@ -27,7 +27,7 @@ CREATE TABLE "User" (
     "linkedin" TEXT,
     "profileImage" TEXT,
     "bio" TEXT,
-    "careerStartDate" TIMESTAMP(3),
+    "careerStartDate" DATE,
     "creci" TEXT,
     "gender" "Gender",
     "isActive" BOOLEAN NOT NULL DEFAULT true,

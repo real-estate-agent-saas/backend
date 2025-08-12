@@ -13,7 +13,7 @@ import {
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
-  @IsEmail()
+  @IsString()
   publicEmail?: string;
 
   @IsOptional()
