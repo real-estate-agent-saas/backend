@@ -37,7 +37,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   linkedin?: string;
 
   @IsOptional()
-  @IsUrl()
   profileImage?: string;
 
   @IsOptional()
