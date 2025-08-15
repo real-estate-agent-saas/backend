@@ -63,13 +63,13 @@ model Property {
   roomsQty         Int
   bathroomsQty     Int
   parkingSpacesQty Int
-  area             Decimal
+  area             Decimal?
   youtubeUrl       String?
   price            Decimal?
   coverImage       String?
-  deliveryStatus   String?
   isFurnished      Boolean?
   isNearSubway     Boolean?
+  isFeatured       Boolean  @default(false)
   isActive         Boolean  @default(true)
 
   // Enums
@@ -77,18 +77,28 @@ model Property {
   propertyStanding PropertyStanding?
   propertyType     PropertyType?
   propertyTypology PropertyTypology?
+  deliveryStatus   DeliveryStatus?
 
   // Date Control
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relationships
-  user             User               @relation(fields: [userId], references: [id]) // Relation 1-N (One property belongs to one user)
+  user             User               @relation(fields: [userId], references: [id]) // Relation 1-N (One user can have many properties)
   userId           Int
   address          Address? // Relation 1-1 (One property has one address)
   propertyGallery  PropertyGallery[] // Relation 1-N (One property can have many images)
   floorPlanGallery FloorPlanGallery[] // Relation 1-N (One property can have many floor plans)
   propertyLeisure  Leisure[] // Relation M-N (Many properties can have many leisure options)
+}
+
+enum DeliveryStatus {
+  PRONTO
+  VENDIDO
+  EM_OBRAS
+  LANCAMENTO
+  BREVE_LANCAMENTO
+  FUTURO_LANCAMENTO
 }
 
 enum PropertyType {
@@ -117,9 +127,9 @@ enum PropertyTypology {
   DUPLEX
   TRIPLEX
   COBERTURA
-  LOFT
   KITNET
   PENTHOUSE
+  LOFT
   FLAT
   TOWNHOUSE
   CASA_TERREA
@@ -145,12 +155,12 @@ model Address {
   number       String?
   complement   String?
   neighborhood String
-  zone         String
-  city         String
-  state        String
-  zipCode      String
-  latitude     Float
-  longitude    Float
+  zone         String?
+  city         String?
+  state        String?
+  zipCode      String?
+  latitude     Float?
+  longitude    Float?
 
   property   Property @relation(fields: [propertyId], references: [id]) // Property relation 1-1 (One address belongs to one property)
   propertyId Int      @unique

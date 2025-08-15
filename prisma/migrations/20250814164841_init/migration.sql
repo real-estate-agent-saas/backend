@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('MASCULINO', 'FEMININO', 'OUTRO');
+CREATE TYPE "Gender" AS ENUM ('MASCULINO', 'FEMININO', 'OUTROS');
 
 -- CreateEnum
 CREATE TYPE "PropertyType" AS ENUM ('CASA', 'APARTAMENTO');
@@ -11,7 +11,7 @@ CREATE TYPE "PropertyPurpose" AS ENUM ('VENDA', 'LOCACAO', 'ARRENDAMENTO', 'TEMP
 CREATE TYPE "PropertyStanding" AS ENUM ('POPULAR', 'MEDIO_PADRAO', 'ALTO_PADRAO');
 
 -- CreateEnum
-CREATE TYPE "PropertyTypology" AS ENUM ('STUDIO', 'GARDEN', 'DUPLEX', 'TRIPLEX', 'COBERTURA', 'LOFT', 'KITNET', 'PENTHOUSE', 'FLAT', 'TOWNHOUSE', 'CASA_TERREA', 'SOBRADO', 'CHALET', 'VILA', 'BANGALO', 'CASA_DE_CAMPO', 'FAZENDA', 'SITIO', 'CHACARA', 'GALPAO', 'SALA_COMERCIAL', 'LOJA', 'ANDAR_CORPORATIVO', 'TERRENO', 'LOTEAMENTO');
+CREATE TYPE "PropertyTypology" AS ENUM ('STUDIO', 'GARDEN', 'DUPLEX', 'TRIPLEX', 'COBERTURA', 'KITNET', 'PENTHOUSE', 'LOFT', 'FLAT', 'TOWNHOUSE', 'CASA_TERREA', 'SOBRADO', 'CHALET', 'VILA', 'BANGALO', 'CASA_DE_CAMPO', 'FAZENDA', 'SITIO', 'CHACARA', 'GALPAO', 'SALA_COMERCIAL', 'LOJA', 'ANDAR_CORPORATIVO', 'TERRENO', 'LOTEAMENTO');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -27,7 +27,7 @@ CREATE TABLE "User" (
     "linkedin" TEXT,
     "profileImage" TEXT,
     "bio" TEXT,
-    "careerStartDate" DATE,
+    "careerStartDate" TIMESTAMP(3),
     "creci" TEXT,
     "gender" "Gender",
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -53,7 +53,7 @@ CREATE TABLE "Property" (
     "roomsQty" INTEGER NOT NULL,
     "bathroomsQty" INTEGER NOT NULL,
     "parkingSpacesQty" INTEGER NOT NULL,
-    "area" DECIMAL(65,30) NOT NULL,
+    "area" DECIMAL(65,30),
     "youtubeUrl" TEXT,
     "price" DECIMAL(65,30),
     "coverImage" TEXT,
@@ -79,12 +79,12 @@ CREATE TABLE "Address" (
     "number" TEXT,
     "complement" TEXT,
     "neighborhood" TEXT NOT NULL,
-    "zone" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "zipCode" TEXT NOT NULL,
-    "latitude" DOUBLE PRECISION NOT NULL,
-    "longitude" DOUBLE PRECISION NOT NULL,
+    "zone" TEXT,
+    "city" TEXT,
+    "state" TEXT,
+    "zipCode" TEXT,
+    "latitude" DOUBLE PRECISION,
+    "longitude" DOUBLE PRECISION,
     "propertyId" INTEGER NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")

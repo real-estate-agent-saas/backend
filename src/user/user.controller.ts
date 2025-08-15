@@ -4,15 +4,22 @@ import {
   Post,
   Body,
   Patch,
-  HttpCode,
 } from '@nestjs/common';
+
+
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { IsPublic } from 'src/auth/decorators/is-public.decorator';
-import { ApiOperation } from '@nestjs/swagger';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
+
+// DTO
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+// Custom Decorator
+import { IsPublic } from 'src/auth/decorators/is-public.decorator';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+
+// Swagger
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {

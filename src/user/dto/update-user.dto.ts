@@ -3,8 +3,6 @@ import { CreateUserDto } from './create-user.dto';
 import {
   IsOptional,
   IsString,
-  IsEmail,
-  IsUrl,
   IsDateString,
   IsArray,
   ArrayUnique,
