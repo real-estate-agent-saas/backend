@@ -16,8 +16,7 @@ import { LoginDto } from './dto/login.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 //How long the browser keep the token on the cookies
-import { JWT_EXPIRATION_MS  } from './constants/auth.constants';
-
+import { JWT_EXPIRATION_MS } from './constants/auth.constants';
 
 @ApiTags('Auth')
 @Controller()
@@ -36,7 +35,7 @@ export class AuthController {
   ) {
     const { access_token } = await this.authService.login(req.user);
 
-    // Define o cookie httpOnly
+    // Defines cookie as httpOnly
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -47,19 +46,17 @@ export class AuthController {
     return { message: 'Login realizado com sucesso' };
   }
 
-  @IsPublic() // Não precisa de autenticação
-  @Post('logout') // Endpoint para logout
-  @HttpCode(HttpStatus.OK) // Responde com status 200 OK em vez do padrão 201 Created
-  @ApiOperation({ summary: 'Realiza logout removendo o cookie' }) // Descrição da operação
+  @IsPublic()
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Realiza logout removendo o cookie' })
   async logout(@Res({ passthrough: true }) res: Response) {
-    // Recebe a resposta do Express
     res.clearCookie('access_token', {
-      // Limpa o cookie de autenticação
-      httpOnly: true, // Garante que o cookie não é acessível via JavaScript
-      secure: false, // Trafego realizado somente com HTTPS
-      sameSite: 'strict', // Envia o cookie apenas para requisições que o originou
+      httpOnly: true, // Insures that JS cannot access the token
+      secure: process.env.NODE_ENV === "production", // Marks the cookie to be used with HTTPS only.
+      sameSite: 'strict', // Only sends the cookie to the origin aplication that created it 
     });
 
-    return { message: 'Logout realizado com sucesso' }; // Retorna uma mensagem de sucesso
+    return { message: 'Logout realizado com sucesso' }; // Success message
   }
 }

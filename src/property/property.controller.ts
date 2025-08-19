@@ -6,20 +6,24 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { PropertyService } from './property.service';
 
-// Dtos
+import { PropertyService } from './property.service';
+import { User } from '@prisma/client';
+
+// Decorator
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+
+// Swagger
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+// DTO
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 
-// Swagger
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-// User data
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { User } from '@prisma/client';
-
+@ApiTags('Properties')
 @Controller('property')
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
@@ -27,50 +31,60 @@ export class PropertyController {
   @Post()
   @ApiOperation({ summary: 'Cadastra um imóvel' })
   @ApiResponse({ status: 201, description: 'Imóvel criado com sucesso' })
-  create(
-    @Body() createPropertyDto: CreatePropertyDto,
-    @CurrentUser() user: User,
-  ) {
-    return this.propertyService.create(createPropertyDto, user.id);
+  create(@Body() dto: CreatePropertyDto, @CurrentUser() user: User) {
+    return this.propertyService.create(dto, user.id);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todos os imóveis' })
-  @ApiResponse({ status: 200, description: 'Imóveis encontrados' })
-  @ApiResponse({ status: 404, description: 'Imóveis não encontrados' })
-  @ApiResponse({
-    status: 404,
-    description: 'Nenhum imóvel encontrado para esse usuário',
-  })
+  @ApiOperation({ summary: 'Lista todos os imóveis do usuário logado' })
+  @ApiResponse({ status: 200, description: 'Lista retornada com sucesso' })
   findAll(@CurrentUser() user: User) {
     return this.propertyService.findAll(user.id);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Busca um imóvel específico do usuário logado' })
-  @ApiResponse({ status: 200, description: 'Imóvel encontrado' })
-  @ApiResponse({ status: 404, description: 'Imóvel não encontrado' })
-  findOne(@Param('id') propertyId: string, @CurrentUser() user: User) {
-    return this.propertyService.findOne(+propertyId, user.id);
+  @ApiOperation({ summary: 'Busca um imóvel específico' })
+  findOne(
+    @Param('id', ParseIntPipe) propertyId: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.propertyService.findOne(propertyId, user.id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza um imóvel do usuário logado' })
-  @ApiResponse({ status: 200, description: 'Imóvel atualizado com sucesso' })
-  @ApiResponse({ status: 404, description: 'Imóvel não encontrado' })
-  async update(
-    @Param('id') propertyId: string,
-    @Body() updatePropertyDto: UpdatePropertyDto,
+  update(
+    @Param('id', ParseIntPipe) propertyId: number,
+    @Body() dto: UpdatePropertyDto,
     @CurrentUser() user: User,
   ) {
-    return this.propertyService.update(+propertyId, updatePropertyDto, user.id);
+    return this.propertyService.update(propertyId, dto, user.id);
+  }
+
+  @Patch(':id/disable')
+  @ApiOperation({ summary: 'Desabilita um imóvel' })
+  disable(
+    @Param('id', ParseIntPipe) propertyId: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.propertyService.disable(propertyId, user.id);
+  }
+
+  @Patch(':id/enable')
+  @ApiOperation({ summary: 'Habilita um imóvel' })
+  enable(
+    @Param('id', ParseIntPipe) propertyId: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.propertyService.enable(propertyId, user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Deleta um imóvel' })
-  @ApiResponse({ status: 200, description: 'Imóvel removido com sucesso' })
-  @ApiResponse({ status: 404, description: 'Imóvel não encontrado' })
-  remove(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.propertyService.remove(+id, user.id);
+  delete(
+    @Param('id', ParseIntPipe) propertyId: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.propertyService.delete(propertyId, user.id);
   }
 }

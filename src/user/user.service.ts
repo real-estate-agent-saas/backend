@@ -1,8 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+
+// DTOs
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateSlugDto } from './dto/update-slug.dto';
+
+// Constant
+import { RESERVED_SLUGS } from './constants/reserved-slugs';
 
 @Injectable()
 export class UserService {
@@ -62,7 +68,7 @@ export class UserService {
   }
 
   // Gets all user data
-  async read(id: number) {
+  async getProfile(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -76,8 +82,15 @@ export class UserService {
     });
   }
 
+  // Delete user
+  async delete(id: number) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
+
   // Gets all specialties
-  async getAllSpecialties() {
+  async listSpecialties() {
     return this.prisma.specialty.findMany({
       select: {
         id: true,
@@ -90,6 +103,30 @@ export class UserService {
   findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
+    });
+  }
+
+  // Gets user slug
+  async getSlug(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        slug: true,
+      },
+    });
+  }
+
+  // Updates user slug
+  async updateSlug(id: number, slugDto: UpdateSlugDto) {
+    const slug = slugDto.slug.toLowerCase();
+
+    if (RESERVED_SLUGS.includes(slug)) {
+      throw new BadRequestException('Slug não permitido');
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { slug },
     });
   }
 }

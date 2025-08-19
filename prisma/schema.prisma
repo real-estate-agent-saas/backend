@@ -16,6 +16,7 @@ model User {
   password String
 
   // Public exibition data
+  tradingName     String? // Trading name for exibition
   publicEmail     String? // Public email for exibition
   whatsapp        String?
   phone           String?
@@ -30,6 +31,10 @@ model User {
   gender Gender?
 
   isActive Boolean @default(true)
+
+  // For page exhibition
+  slug         String?  @unique
+  customDomain String?  @unique
 
   // Relationships
   specialties Specialty[] // User Specialties M-N (Many users can have many specialties)
@@ -84,7 +89,7 @@ model Property {
   updatedAt DateTime @updatedAt
 
   // Relationships
-  user             User               @relation(fields: [userId], references: [id]) // Relation 1-N (One user can have many properties)
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation 1-N (One user can have many properties)
   userId           Int
   address          Address? // Relation 1-1 (One property has one address)
   propertyGallery  PropertyGallery[] // Relation 1-N (One property can have many images)
@@ -119,6 +124,7 @@ enum PropertyStanding {
   POPULAR
   MEDIO_PADRAO
   ALTO_PADRAO
+  ALTISSIMO_PADRAO
 }
 
 enum PropertyTypology {
@@ -162,7 +168,7 @@ model Address {
   latitude     Float?
   longitude    Float?
 
-  property   Property @relation(fields: [propertyId], references: [id]) // Property relation 1-1 (One address belongs to one property)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Property relation 1-1 (One address belongs to one property)
   propertyId Int      @unique
 }
 
@@ -170,7 +176,7 @@ model PropertyGallery {
   id         Int       @id @default(autoincrement())
   url        String
   order      Int?
-  property   Property? @relation(fields: [propertyId], references: [id]) // Property relation 1-N (One property can have many images)
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Property relation 1-N (One property can have many images)
   propertyId Int?
 }
 
@@ -179,7 +185,7 @@ model FloorPlanGallery {
   url         String
   description String?
   order       Int?
-  property    Property @relation(fields: [propertyId], references: [id]) // Property relation 1-N (One property can have many floor plans)
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Property relation 1-N (One property can have many floor plans)
   propertyId  Int
 }
 
