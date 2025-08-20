@@ -110,9 +110,7 @@ export class UserService {
   // ---------------------------------------------------- Auxiliary function to validate slug ------------------------------------------------
 
   private validateSlug(slug: string): void {
-    const availableSlug = slug;
-
-    if (RESERVED_SLUGS.includes(availableSlug)) {
+    if (RESERVED_SLUGS.includes(slug)) {
       throw new BadRequestException('Slug não permitido');
     }
   }
@@ -127,13 +125,13 @@ export class UserService {
     const existingSlug = await this.prisma.user.findFirst({
       where: {
         slug: slug,
-      }
+      },
     });
 
-    if(existingSlug){
-      return false;
+    if (existingSlug) {
+      return { available: false, reason: 'Já existe no sistema' };
     }
-    return true;
+    return { available: true };
   }
 
   // ---------------------------------------------------- Get user slug ------------------------------------------------
