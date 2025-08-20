@@ -61,7 +61,7 @@ export class PropertyController {
     return this.propertyService.update(propertyId, dto, user.id);
   }
 
-  @Patch(':id/disable')
+  @Patch('disable/:id')
   @ApiOperation({ summary: 'Desabilita um imóvel' })
   disable(
     @Param('id', ParseIntPipe) propertyId: number,
@@ -70,7 +70,7 @@ export class PropertyController {
     return this.propertyService.disable(propertyId, user.id);
   }
 
-  @Patch(':id/enable')
+  @Patch('enable/:id')
   @ApiOperation({ summary: 'Habilita um imóvel' })
   enable(
     @Param('id', ParseIntPipe) propertyId: number,

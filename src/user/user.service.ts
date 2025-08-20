@@ -9,12 +9,20 @@ import { UpdateSlugDto } from './dto/update-slug.dto';
 
 // Constant
 import { RESERVED_SLUGS } from './constants/reserved-slugs';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Creates a new user
+  // ---------------------------------------------------- auxiliary function to find user by email ------------------------------------------------
+  findByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  // ---------------------------------------------------- Create ------------------------------------------------
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.findByEmail(createUserDto.email);
 
@@ -35,7 +43,22 @@ export class UserService {
     };
   }
 
-  // Updates the current user based on his ID from the JWT Token
+  // ---------------------------------------------------- Read ------------------------------------------------
+  async getProfile(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        specialties: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  // ---------------------------------------------------- Update ------------------------------------------------
   async update(id: number, updateUserDto: UpdateUserDto) {
     const data: any = { ...updateUserDto };
 
@@ -67,29 +90,14 @@ export class UserService {
     };
   }
 
-  // Gets all user data
-  async getProfile(id: number) {
-    return this.prisma.user.findUnique({
-      where: { id },
-      include: {
-        specialties: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-  }
-
-  // Delete user
+  // ---------------------------------------------------- Delete ------------------------------------------------
   async delete(id: number) {
     return this.prisma.user.delete({
       where: { id },
     });
   }
 
-  // Gets all specialties
+  // ---------------------------------------------------- List all specialties ------------------------------------------------
   async listSpecialties() {
     return this.prisma.specialty.findMany({
       select: {
@@ -99,14 +107,36 @@ export class UserService {
     });
   }
 
-  // Searches user by email
-  findByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: { email },
-    });
+  // ---------------------------------------------------- Auxiliary function to validate slug ------------------------------------------------
+
+  private validateSlug(slug: string): void {
+    const availableSlug = slug;
+
+    if (RESERVED_SLUGS.includes(availableSlug)) {
+      throw new BadRequestException('Slug não permitido');
+    }
   }
 
-  // Gets user slug
+  // ---------------------------------------------------- Checks Slug Availability ------------------------------------------------
+  async checkSlugAvailability(slugDto: UpdateSlugDto) {
+    const slug = slugDto.slug;
+
+    // Verifies if slug is not a reserved word
+    this.validateSlug(slug);
+
+    const existingSlug = await this.prisma.user.findFirst({
+      where: {
+        slug: slug,
+      }
+    });
+
+    if(existingSlug){
+      return false;
+    }
+    return true;
+  }
+
+  // ---------------------------------------------------- Get user slug ------------------------------------------------
   async getSlug(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
@@ -116,17 +146,29 @@ export class UserService {
     });
   }
 
-  // Updates user slug
+  // ---------------------------------------------------- Updates user slug ------------------------------------------------
   async updateSlug(id: number, slugDto: UpdateSlugDto) {
-    const slug = slugDto.slug.toLowerCase();
+    const slug = slugDto.slug;
 
-    if (RESERVED_SLUGS.includes(slug)) {
-      throw new BadRequestException('Slug não permitido');
+    // Verifies if slug is not a reserved word
+    this.validateSlug(slug);
+
+    try {
+      return await this.prisma.user.update({
+        where: { id },
+        data: { slug },
+        select: {
+          slug: true,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002' // Unique constraint failed (It means that the slug already exists)
+      ) {
+        throw new BadRequestException('Este slug já está em uso'); // Friendly message
+      }
+      throw error;
     }
-
-    return this.prisma.user.update({
-      where: { id },
-      data: { slug },
-    });
   }
 }

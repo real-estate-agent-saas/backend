@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
@@ -29,20 +36,20 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  // ---------------------------------------------------- Update ------------------------------------------------
-  @Patch()
-  @ApiOperation({ summary: 'Atualiza o usuário logado' })
-  @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso' })
-  update(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(user.id, updateUserDto);
-  }
-
   // ---------------------------------------------------- Read ------------------------------------------------
   @Get()
   @ApiOperation({ summary: 'Busca os dados do usuário logado' })
   @ApiResponse({ status: 200, description: 'Dados do usuário retornados' })
   getProfile(@CurrentUser() user: User) {
     return this.userService.getProfile(user.id);
+  }
+
+  // ---------------------------------------------------- Update ------------------------------------------------
+  @Patch()
+  @ApiOperation({ summary: 'Atualiza o usuário logado' })
+  @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso' })
+  update(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(user.id, updateUserDto);
   }
 
   // ---------------------------------------------------- Delete ------------------------------------------------
@@ -58,6 +65,7 @@ export class UserController {
     return this.userService.delete(user.id);
   }
 
+  // ---------------------------------------------------- List all specialties ------------------------------------------------
   @Get('specialties')
   @ApiOperation({ summary: 'Lista todas as especialidades disponíveis' })
   @ApiResponse({
@@ -68,6 +76,16 @@ export class UserController {
     return this.userService.listSpecialties();
   }
 
+  // ---------------------------------------------------- Checks Slug Availability ------------------------------------------------
+  @Post('slug/isAvailable') 
+  @ApiOperation({ summary: 'Verifica se o slug já está sendo utilizado' })
+  @ApiResponse({ status: 200, description: 'Slug disponível' })
+  @ApiResponse({ status: 400, description: 'Slug inválido ou já em uso' })
+  checkSlugAvailability(@Body() slug: UpdateSlugDto) {
+    return this.userService.checkSlugAvailability(slug);
+  }
+
+  // ---------------------------------------------------- Get user slug ------------------------------------------------
   @Get('slug')
   @ApiOperation({ summary: 'Pega o slug do corretor logado' })
   @ApiResponse({ status: 200, description: 'Slug encontrado com sucesso' })
@@ -75,6 +93,7 @@ export class UserController {
     return this.userService.getSlug(user.id);
   }
 
+  // ---------------------------------------------------- Updates user slug ------------------------------------------------
   @Patch('slug')
   @ApiOperation({
     summary: 'Atualiza o slug do corretor se não existir outro igual',
