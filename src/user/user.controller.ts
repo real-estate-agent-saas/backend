@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
@@ -16,7 +9,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 // DTO
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdateSlugDto } from './dto/update-slug.dto';
 
 // Decorators
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
@@ -76,30 +68,5 @@ export class UserController {
     return this.userService.listSpecialties();
   }
 
-  // ---------------------------------------------------- Checks Slug Availability ------------------------------------------------
-  @Post('slug/isAvailable') 
-  @ApiOperation({ summary: 'Verifica se o slug já está sendo utilizado' })
-  @ApiResponse({ status: 200, description: 'Slug disponível' })
-  @ApiResponse({ status: 400, description: 'Slug inválido ou já em uso' })
-  checkSlugAvailability(@Body() slug: UpdateSlugDto) {
-    return this.userService.checkSlugAvailability(slug);
-  }
 
-  // ---------------------------------------------------- Get user slug ------------------------------------------------
-  @Get('slug')
-  @ApiOperation({ summary: 'Pega o slug do corretor logado' })
-  @ApiResponse({ status: 200, description: 'Slug encontrado com sucesso' })
-  getSlug(@CurrentUser() user: User) {
-    return this.userService.getSlug(user.id);
-  }
-
-  // ---------------------------------------------------- Updates user slug ------------------------------------------------
-  @Patch('slug')
-  @ApiOperation({
-    summary: 'Atualiza o slug do corretor se não existir outro igual',
-  })
-  @ApiResponse({ status: 200, description: 'Slug atualizado com sucesso' })
-  updateSlug(@CurrentUser() user: User, @Body() slug: UpdateSlugDto) {
-    return this.userService.updateSlug(user.id, slug);
-  }
 }

@@ -11,6 +11,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { DinamicWebsiteModule } from './dinamic-website/dinamic-website.module';
+import { TemplateModule } from './template/template.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     PropertyModule,
     UserModule,
     PrismaModule,
+    DinamicWebsiteModule,
+    TemplateModule,
   ],
   controllers: [AppController, AuthController],
   providers: [

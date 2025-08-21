@@ -5,11 +5,6 @@ import * as bcrypt from 'bcrypt';
 // DTOs
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdateSlugDto } from './dto/update-slug.dto';
-
-// Constant
-import { RESERVED_SLUGS } from './constants/reserved-slugs';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -35,7 +30,11 @@ export class UserService {
       password: await bcrypt.hash(createUserDto.password, 10),
     };
 
-    const createdUser = await this.prisma.user.create({ data });
+    const createdUser = await this.prisma.user.create({
+      data: data,
+      
+      
+    });
 
     return {
       ...createdUser,
@@ -107,66 +106,4 @@ export class UserService {
     });
   }
 
-  // ---------------------------------------------------- Auxiliary function to validate slug ------------------------------------------------
-
-  private validateSlug(slug: string): void {
-    if (RESERVED_SLUGS.includes(slug)) {
-      throw new BadRequestException('Slug não permitido');
-    }
-  }
-
-  // ---------------------------------------------------- Checks Slug Availability ------------------------------------------------
-  async checkSlugAvailability(slugDto: UpdateSlugDto) {
-    const slug = slugDto.slug;
-
-    // Verifies if slug is not a reserved word
-    this.validateSlug(slug);
-
-    const existingSlug = await this.prisma.user.findFirst({
-      where: {
-        slug: slug,
-      },
-    });
-
-    if (existingSlug) {
-      return { available: false, reason: 'Já existe no sistema' };
-    }
-    return { available: true };
-  }
-
-  // ---------------------------------------------------- Get user slug ------------------------------------------------
-  async getSlug(id: number) {
-    return this.prisma.user.findUnique({
-      where: { id },
-      select: {
-        slug: true,
-      },
-    });
-  }
-
-  // ---------------------------------------------------- Updates user slug ------------------------------------------------
-  async updateSlug(id: number, slugDto: UpdateSlugDto) {
-    const slug = slugDto.slug;
-
-    // Verifies if slug is not a reserved word
-    this.validateSlug(slug);
-
-    try {
-      return await this.prisma.user.update({
-        where: { id },
-        data: { slug },
-        select: {
-          slug: true,
-        },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002' // Unique constraint failed (It means that the slug already exists)
-      ) {
-        throw new BadRequestException('Este slug já está em uso'); // Friendly message
-      }
-      throw error;
-    }
-  }
 }

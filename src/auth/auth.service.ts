@@ -7,7 +7,7 @@ import { UserPayload } from './models/UserPayload';
 import { UserToken } from './models/UserToken';
 
 // How long the backend considers the token
-import { JWT_EXPIRATION } from './constants/auth.constants'
+import { JWT_EXPIRATION } from './constants/auth.constants';
 
 @Injectable()
 export class AuthService {
