@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { UpdateSlugDto } from './update-slug.dto';
+import { UpdateSlugDto } from '../../dinamic-website/dto/update-slug.dto';
 import { UpdateCustomDomainDto } from './update-custom-domain.dto';
 import {
   IsOptional,

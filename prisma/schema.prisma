@@ -84,7 +84,7 @@ model Property {
   address            Address? // Relation 1-1 (One property has one address)
   propertyGallery    PropertyGallery[] // Relation 1-N (One property can have many images)
   floorPlanGallery   FloorPlanGallery[] // Relation 1-N (One property can have many floor plans)
-  
+
   // Relations M-N
   propertyLeisure    Leisure[]
   propertyPurposes   PropertyPurpose[]
@@ -179,8 +179,6 @@ model DinamicWebsite {
   // Visual settings
   templateId     Int
   template       Template @relation(fields: [templateId], references: [id]) // Template relation 1-N (One template can be used by many dinamic websites)
-  primaryColor   String?
-  secondaryColor String?
   logoUrl        String?
 
   // Domain

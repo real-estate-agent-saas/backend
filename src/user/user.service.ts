@@ -31,9 +31,14 @@ export class UserService {
     };
 
     const createdUser = await this.prisma.user.create({
-      data: data,
-      
-      
+      data: {
+        ...data,
+        dinamicWebsite: {
+          create: {
+            templateId: 1,
+          },
+        },
+      },
     });
 
     return {
@@ -105,5 +110,4 @@ export class UserService {
       },
     });
   }
-
 }
