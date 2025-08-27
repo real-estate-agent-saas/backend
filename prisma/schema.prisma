@@ -56,8 +56,7 @@ model Specialty {
   users User[] // Related to users M-N
 }
 
-//---------------------------------------------- (Property, Enums and Relationships) ----------------------------------------------
-
+//-------------------------------------------------- (Property and Relationships) ----------------------------------------------
 model Property {
   id               Int      @id @default(autoincrement())
   title            String
@@ -79,11 +78,11 @@ model Property {
   updatedAt DateTime @updatedAt
 
   // Relationships
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation 1-N (One user can have many properties)
-  userId             Int
-  address            Address? // Relation 1-1 (One property has one address)
-  propertyGallery    PropertyGallery[] // Relation 1-N (One property can have many images)
-  floorPlanGallery   FloorPlanGallery[] // Relation 1-N (One property can have many floor plans)
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation 1-N (One user can have many properties)
+  userId           Int
+  address          Address? // Relation 1-1 (One property has one address)
+  propertyGallery  PropertyGallery[] // Relation 1-N (One property can have many images)
+  floorPlanGallery FloorPlanGallery[] // Relation 1-N (One property can have many floor plans)
 
   // Relations M-N
   propertyLeisure    Leisure[]
@@ -129,6 +128,13 @@ model DeliveryStatus {
   properties Property[]
 }
 
+model Leisure {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  properties Property[]
+}
+
 model Address {
   id           Int     @id @default(autoincrement())
   street       String
@@ -163,12 +169,6 @@ model FloorPlanGallery {
   propertyId  Int
 }
 
-model Leisure {
-  id         Int        @id @default(autoincrement())
-  name       String     @unique
-  properties Property[] // Property relation M-N (Many leisure options can belong to many properties)
-}
-
 //---------------------------------------------------------- (Dinamic Website)  ------------------------------------------------------------------
 
 model DinamicWebsite {
@@ -177,9 +177,9 @@ model DinamicWebsite {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade) // User relation 1-1 (One user can have one dinamic website)
 
   // Visual settings
-  templateId     Int
-  template       Template @relation(fields: [templateId], references: [id]) // Template relation 1-N (One template can be used by many dinamic websites)
-  logoUrl        String?
+  templateId Int
+  template   Template @relation(fields: [templateId], references: [id]) // Template relation 1-N (One template can be used by many dinamic websites)
+  logo       String?
 
   // Domain
   slug         String? @unique
