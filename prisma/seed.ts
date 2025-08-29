@@ -108,7 +108,7 @@ async function seed() {
     'Loteamento',
   ];
 
-  for(const name of propertyTypology) {
+  for (const name of propertyTypology) {
     await prisma.propertyTypology.upsert({
       where: { name },
       update: {},
@@ -144,7 +144,6 @@ async function seed() {
 
   console.log('Especialidades criadas com sucesso!');
 
-
   //----------------------------------- Templates -----------------------------------
   const templates = [
     {
@@ -174,6 +173,22 @@ async function seed() {
   }
 
   console.log('Templates criados com sucesso!');
+
+  //----------------------------------- Templates -----------------------------------
+
+  const zones = ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro'];
+
+  for (const name of zones) {
+    await prisma.zone.upsert({
+      where: {
+        name: name
+      },
+      update: {},
+      create: { name }
+    });
+  }
+
+  console.log("Zonas criadas com sucesso")
 }
 
 // Executes the seed (Terminal command: npx prisma db seed)

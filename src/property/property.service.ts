@@ -20,7 +20,15 @@ export class PropertyService {
         userId: userId,
       },
       include: {
-        address: true,
+        address: {
+          include: {
+            zone: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         floorPlanGallery: true,
         propertyGallery: true,
         propertyLeisure: true,
@@ -35,27 +43,19 @@ export class PropertyService {
   }
 
   //---------------------------------------------------- Creates a property with a new address -----------------------------
-  async create(propertyDto: CreatePropertyDto, userId: number) {
-    const { address, ...propertyData } = propertyDto;
-
-    const propertyInput: Prisma.PropertyCreateInput = {
-      ...propertyData,
-      user: {
-        connect: { id: userId },
-      },
-      address: {
-        create: address,
-      },
-    };
-
-    const property = await this.prisma.property.create({
-      data: propertyInput,
-      include: {
-        address: true,
-      },
-    });
-
-    return property;
+  async create(createPropertyDto: CreatePropertyDto, userId: number) {
+    const {
+      address,
+      propertyGallery,
+      floorPlanGallery,
+      propertyLeisure,
+      propertyPurposes,
+      propertyStandings,
+      propertyTypes,
+      propertyTypologies,
+      deliveryStatus,
+      ...propertyData
+    } = createPropertyDto;
   }
 
   //---------------------------------------------------------------- Gets (ALL) properties -------------------------------------
@@ -95,28 +95,28 @@ export class PropertyService {
   }
 
   //------------------------------------------------------------ Updates a property  -----------------------------------------
-  async update(
-    propertyId: number,
-    updatePropertyDto: UpdatePropertyDto,
-    userId: number,
-  ) {
-    await this.findUserProperty(propertyId, userId);
+  // async update(
+  //   propertyId: number,
+  //   updatePropertyDto: UpdatePropertyDto,
+  //   userId: number,
+  // ) {
+  //   await this.findUserProperty(propertyId, userId);
 
-    const { address, ...propertyData } = updatePropertyDto;
-    return this.prisma.property.update({
-      where: { id: propertyId },
-      data: {
-        ...propertyData,
-        ...(address && { address: { update: address } }), // If address is provided updates it
-      },
-      include: {
-        address: true,
-        propertyGallery: true,
-        floorPlanGallery: true,
-        propertyLeisure: true,
-      },
-    });
-  }
+  //   const { address, ...propertyData } = updatePropertyDto;
+  //   return this.prisma.property.update({
+  //     where: { id: propertyId },
+  //     data: {
+  //       ...propertyData,
+  //       ...(address && { address: { update: address } }), // If address is provided updates it
+  //     },
+  //     include: {
+  //       address: true,
+  //       propertyGallery: true,
+  //       floorPlanGallery: true,
+  //       propertyLeisure: true,
+  //     },
+  //   });
+  // }
 
   //-------------------------------------------------------- Enable/Disable Property -------------------------------------
   private async togglePropertyStatus(

@@ -49,7 +49,7 @@ export class DinamicWebsiteController {
   }
 
   // ---------------------------------------------------- Get user slug ------------------------------------------------
-  @Get('slug')
+  @Get('slug/currentSlug')
   @ApiOperation({ summary: 'Pega o slug do corretor logado' })
   @ApiResponse({ status: 200, description: 'Slug encontrado com sucesso' })
   getSlug(@CurrentUser() user: User) {

@@ -20,7 +20,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 // DTO
 import { CreatePropertyDto } from './dto/create-property.dto';
-import { UpdatePropertyDto } from './dto/update-property.dto';
+// import { UpdatePropertyDto } from './dto/update-property.dto';
 
 
 @ApiTags('Properties')
@@ -51,15 +51,15 @@ export class PropertyController {
     return this.propertyService.findOne(propertyId, user.id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Atualiza um imóvel do usuário logado' })
-  update(
-    @Param('id', ParseIntPipe) propertyId: number,
-    @Body() dto: UpdatePropertyDto,
-    @CurrentUser() user: User,
-  ) {
-    return this.propertyService.update(propertyId, dto, user.id);
-  }
+  // @Patch(':id')
+  // @ApiOperation({ summary: 'Atualiza um imóvel do usuário logado' })
+  // update(
+  //   @Param('id', ParseIntPipe) propertyId: number,
+  //   @Body() dto: UpdatePropertyDto,
+  //   @CurrentUser() user: User,
+  // ) {
+  //   return this.propertyService.update(propertyId, dto, user.id);
+  // }
 
   @Patch('disable/:id')
   @ApiOperation({ summary: 'Desabilita um imóvel' })

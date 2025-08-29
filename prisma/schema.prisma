@@ -65,7 +65,7 @@ model Property {
   bathroomsQty     Int
   parkingSpacesQty Int
   area             Decimal?
-  youtubeUrl       String?
+  youtubeURL       String?
   price            Decimal?
   coverImage       String?
   isFurnished      Boolean?
@@ -135,26 +135,9 @@ model Leisure {
   properties Property[]
 }
 
-model Address {
-  id           Int     @id @default(autoincrement())
-  street       String
-  number       String?
-  complement   String?
-  neighborhood String
-  zone         String?
-  city         String?
-  state        String?
-  zipCode      String?
-  latitude     Float?
-  longitude    Float?
-
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Property relation 1-1 (One address belongs to one property)
-  propertyId Int      @unique
-}
-
 model PropertyGallery {
   id         Int       @id @default(autoincrement())
-  url        String
+  URL        String
   order      Int?
   property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Property relation 1-N (One property can have many images)
   propertyId Int?
@@ -162,11 +145,40 @@ model PropertyGallery {
 
 model FloorPlanGallery {
   id          Int      @id @default(autoincrement())
-  url         String
+  URL         String
   description String?
   order       Int?
   property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Property relation 1-N (One property can have many floor plans)
   propertyId  Int
+}
+
+model Address {
+  id           Int     @id @default(autoincrement())
+  street       String
+  number       String?
+  complement   String?
+  neighborhood String
+  city         String?
+  state        String?
+  zipCode      String?
+  latitude     Float?
+  longitude    Float?
+
+  // FK Zone
+  zone   Zone? @relation(fields: [zoneId], references: [id])
+  zoneId Int?
+
+  // relação 1-1 with Property
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId Int      @unique
+}
+
+model Zone {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  // relação 1-N
+  addresses Address[]
 }
 
 //---------------------------------------------------------- (Dinamic Website)  ------------------------------------------------------------------
@@ -194,6 +206,6 @@ model Template {
   id          Int              @id @default(autoincrement())
   name        String           @unique
   description String?
-  previewUrl  String?
+  previewURL  String?
   sites       DinamicWebsite[] // Dinamic Website relation 1-N (One template can be used by many dinamic websites)
 }

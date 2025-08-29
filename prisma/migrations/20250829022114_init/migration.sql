@@ -98,21 +98,11 @@ CREATE TABLE "DeliveryStatus" (
 );
 
 -- CreateTable
-CREATE TABLE "Address" (
+CREATE TABLE "Leisure" (
     "id" SERIAL NOT NULL,
-    "street" TEXT NOT NULL,
-    "number" TEXT,
-    "complement" TEXT,
-    "neighborhood" TEXT NOT NULL,
-    "zone" TEXT,
-    "city" TEXT,
-    "state" TEXT,
-    "zipCode" TEXT,
-    "latitude" DOUBLE PRECISION,
-    "longitude" DOUBLE PRECISION,
-    "propertyId" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
 
-    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Leisure_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -137,11 +127,29 @@ CREATE TABLE "FloorPlanGallery" (
 );
 
 -- CreateTable
-CREATE TABLE "Leisure" (
+CREATE TABLE "Address" (
+    "id" SERIAL NOT NULL,
+    "street" TEXT NOT NULL,
+    "number" INTEGER,
+    "complement" TEXT,
+    "neighborhood" TEXT NOT NULL,
+    "city" TEXT,
+    "state" TEXT,
+    "zipCode" TEXT,
+    "latitude" DOUBLE PRECISION,
+    "longitude" DOUBLE PRECISION,
+    "zoneId" INTEGER,
+    "propertyId" INTEGER NOT NULL,
+
+    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Zone" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
 
-    CONSTRAINT "Leisure_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Zone_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -149,9 +157,7 @@ CREATE TABLE "DinamicWebsite" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "templateId" INTEGER NOT NULL,
-    "primaryColor" TEXT,
-    "secondaryColor" TEXT,
-    "logoUrl" TEXT,
+    "logo" TEXT,
     "slug" TEXT,
     "customDomain" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -248,10 +254,13 @@ CREATE UNIQUE INDEX "PropertyTypology_name_key" ON "PropertyTypology"("name");
 CREATE UNIQUE INDEX "DeliveryStatus_name_key" ON "DeliveryStatus"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Leisure_name_key" ON "Leisure"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Address_propertyId_key" ON "Address"("propertyId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Leisure_name_key" ON "Leisure"("name");
+CREATE UNIQUE INDEX "Zone_name_key" ON "Zone"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "DinamicWebsite_userId_key" ON "DinamicWebsite"("userId");
@@ -290,13 +299,16 @@ CREATE INDEX "_LeisureToProperty_B_index" ON "_LeisureToProperty"("B");
 ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "PropertyGallery" ADD CONSTRAINT "PropertyGallery_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FloorPlanGallery" ADD CONSTRAINT "FloorPlanGallery_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_zoneId_fkey" FOREIGN KEY ("zoneId") REFERENCES "Zone"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "DinamicWebsite" ADD CONSTRAINT "DinamicWebsite_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

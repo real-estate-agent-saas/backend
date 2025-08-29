@@ -1,7 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { UpdateSlugDto } from '../../dinamic-website/dto/update-slug.dto';
-import { UpdateCustomDomainDto } from './update-custom-domain.dto';
 import {
   IsOptional,
   IsString,
@@ -9,9 +7,6 @@ import {
   IsArray,
   ArrayUnique,
   IsInt,
-  MinLength,
-  MaxLength,
-  Matches,
 } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
@@ -40,6 +35,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   linkedin?: string;
 
   @IsOptional()
+  @IsString()
   profileImage?: string;
 
   @IsOptional()
@@ -63,11 +59,4 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ArrayUnique() // ensures that array values are unique
   @IsInt({ each: true }) // Validates that the IDs in the array are integers
   specialties?: number[];
-
-  // For page exhibition
-  @IsOptional()
-  slug?: UpdateSlugDto['slug'];
-
-  @IsOptional()
-  customDomain?: UpdateCustomDomainDto['customDomain'];
 }
