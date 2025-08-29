@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
+import { connect } from 'http2';
 
 @Injectable()
 export class PropertyService {
@@ -46,16 +51,185 @@ export class PropertyService {
   async create(createPropertyDto: CreatePropertyDto, userId: number) {
     const {
       address,
+      propertyPurposeId,
+      propertyStandingId,
+      propertyTypeId,
+      propertyTypologyId,
+      deliveryStatusId,
+      propertyLeisure,
       propertyGallery,
       floorPlanGallery,
-      propertyLeisure,
-      propertyPurposes,
-      propertyStandings,
-      propertyTypes,
-      propertyTypologies,
-      deliveryStatus,
       ...propertyData
     } = createPropertyDto;
+
+    const propertyInput: Prisma.PropertyCreateInput = {
+      // Basic property data and user connection
+      ...propertyData,
+      user: {
+        connect: { id: userId },
+      },
+
+      //------------------------------------- NESTED QUERIES ----------------------
+
+      address: {
+        create: {
+          ...address,
+        },
+      },
+
+      //------- FK connections ------
+      ...(propertyPurposeId && {
+        propertyPurpose: {
+          connect: {
+            id: propertyPurposeId,
+          },
+        },
+      }),
+      ...(propertyStandingId && {
+        propertyStanding: {
+          connect: {
+            id: propertyStandingId,
+          },
+        },
+      }),
+      ...(propertyTypeId && {
+        propertyType: {
+          connect: {
+            id: propertyTypeId,
+          },
+        },
+      }),
+      ...(propertyTypologyId && {
+        propertyTypology: {
+          connect: {
+            id: propertyTypologyId,
+          },
+        },
+      }),
+      ...(deliveryStatusId && {
+        deliveryStatus: {
+          connect: {
+            id: deliveryStatusId,
+          },
+        },
+      }),
+      ...(propertyLeisure && {
+        propertyLeisure: {
+          connect: propertyLeisure.map((id) => ({ id })),
+        },
+      }),
+
+      //------ Images Creations ------
+      propertyGallery: propertyGallery?.length
+        ? {
+            create: propertyGallery.map((gallery) => ({
+              URL: gallery.URL,
+              order: gallery.order,
+            })),
+          }
+        : undefined,
+      floorPlanGallery: floorPlanGallery?.length
+        ? {
+            create: floorPlanGallery.map((gallery) => ({
+              URL: gallery.URL,
+              description: gallery.description,
+              order: gallery.order,
+            })),
+          }
+        : undefined,
+    };
+
+    const property = this.prisma.property.create({
+      data: propertyInput,
+      include: {
+        address: {
+          include: {
+            State: true,
+            zone: true,
+          },
+        },
+        propertyPurpose: true,
+        deliveryStatus: true,
+        propertyType: true,
+        propertyTypology: true,
+        propertyStanding: true,
+        propertyLeisure: true,
+        propertyGallery: true,
+        floorPlanGallery: true,
+      },
+    });
+
+    return property;
+  }
+
+  //------------------------------------------------------------ Updates a property  -----------------------------------------
+  async update(
+    propertyId: number,
+    updatePropertyDto: UpdatePropertyDto,
+    userId: number,
+  ) {
+    // Checks if property belongs to the logged in user
+    const userProperty = await this.findUserProperty(propertyId, userId);
+
+    if (userProperty) {
+      const {
+        address,
+        propertyPurposeId,
+        propertyStandingId,
+        propertyTypeId,
+        propertyTypologyId,
+        deliveryStatusId,
+        propertyLeisure,
+        propertyGallery,
+        floorPlanGallery,
+        ...propertyData
+      } = updatePropertyDto;
+
+      const propertyInput: Prisma.PropertyUpdateInput = {
+        ...propertyData,
+        ...(address && {
+          address: {
+            update: {
+              ...address,
+            },
+          },
+        }),
+        ...(propertyPurposeId && {
+          propertyPurpose: {
+            update: {
+              id: propertyPurposeId,
+            },
+          },
+        }),
+      };
+
+      const property = this.prisma.property.update({
+        data: propertyInput,
+        where: { id: propertyId },
+        include: {
+          address: {
+            include: {
+              State: true,
+              zone: true,
+            },
+          },
+          propertyPurpose: true,
+          deliveryStatus: true,
+          propertyType: true,
+          propertyTypology: true,
+          propertyStanding: true,
+          propertyLeisure: true,
+          propertyGallery: true,
+          floorPlanGallery: true,
+        },
+      });
+
+      return property;
+    } else {
+      throw new NotFoundException(
+        'Nenhum imóvel encontrado para este usuário.',
+      );
+    }
   }
 
   //---------------------------------------------------------------- Gets (ALL) properties -------------------------------------
@@ -93,30 +267,6 @@ export class PropertyService {
       propertyLeisure: true,
     });
   }
-
-  //------------------------------------------------------------ Updates a property  -----------------------------------------
-  // async update(
-  //   propertyId: number,
-  //   updatePropertyDto: UpdatePropertyDto,
-  //   userId: number,
-  // ) {
-  //   await this.findUserProperty(propertyId, userId);
-
-  //   const { address, ...propertyData } = updatePropertyDto;
-  //   return this.prisma.property.update({
-  //     where: { id: propertyId },
-  //     data: {
-  //       ...propertyData,
-  //       ...(address && { address: { update: address } }), // If address is provided updates it
-  //     },
-  //     include: {
-  //       address: true,
-  //       propertyGallery: true,
-  //       floorPlanGallery: true,
-  //       propertyLeisure: true,
-  //     },
-  //   });
-  // }
 
   //-------------------------------------------------------- Enable/Disable Property -------------------------------------
   private async togglePropertyStatus(

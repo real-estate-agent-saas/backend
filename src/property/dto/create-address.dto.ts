@@ -1,7 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsInt, IsArray, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsInt, IsArray } from 'class-validator';
 
 export class CreateAddressDto {
+  @IsOptional()
+  @IsInt()
+  @ApiProperty({
+    description: 'ID do Endereço (gerado automaticamente)',
+    required: false,
+  })
+  id?: number;
+
   @IsString()
   @ApiProperty({
     description: 'Rua do imóvel',
@@ -22,10 +30,10 @@ export class CreateAddressDto {
   @IsString()
   @ApiProperty({
     description: 'Número do endereço podendo incluir letra',
-    example: "1000-B",
+    example: '1000-B',
     required: false,
   })
-  number?: string;
+  propertyNumber?: string;
 
   @IsOptional()
   @IsString()
@@ -46,13 +54,13 @@ export class CreateAddressDto {
   city?: string;
 
   @IsOptional()
-  @IsString()
+  @IsInt()
   @ApiProperty({
     description: 'Estado',
-    example: 'SP',
+    example: 'São Paulo , SP',
     required: false,
   })
-  state?: string;
+  stateId?: number;
 
   @IsOptional()
   @IsString()
@@ -90,13 +98,4 @@ export class CreateAddressDto {
     type: Number,
   })
   zoneId?: number;
-
-  @IsOptional()
-  @IsInt()
-  @ApiProperty({
-    description: 'ID da propriedade associada',
-    example: 1,
-    required: false,
-  })
-  propertyId?: number;
 }

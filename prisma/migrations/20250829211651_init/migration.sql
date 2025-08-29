@@ -43,7 +43,7 @@ CREATE TABLE "Property" (
     "bathroomsQty" INTEGER NOT NULL,
     "parkingSpacesQty" INTEGER NOT NULL,
     "area" DECIMAL(65,30),
-    "youtubeUrl" TEXT,
+    "youtubeURL" TEXT,
     "price" DECIMAL(65,30),
     "coverImage" TEXT,
     "isFurnished" BOOLEAN,
@@ -53,6 +53,11 @@ CREATE TABLE "Property" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER NOT NULL,
+    "deliveryStatusId" INTEGER,
+    "propertyTypologyId" INTEGER,
+    "propertyTypeId" INTEGER,
+    "propertyStandingId" INTEGER,
+    "propertyPurposeId" INTEGER,
 
     CONSTRAINT "Property_pkey" PRIMARY KEY ("id")
 );
@@ -108,7 +113,7 @@ CREATE TABLE "Leisure" (
 -- CreateTable
 CREATE TABLE "PropertyGallery" (
     "id" SERIAL NOT NULL,
-    "url" TEXT NOT NULL,
+    "URL" TEXT NOT NULL,
     "order" INTEGER,
     "propertyId" INTEGER,
 
@@ -118,7 +123,7 @@ CREATE TABLE "PropertyGallery" (
 -- CreateTable
 CREATE TABLE "FloorPlanGallery" (
     "id" SERIAL NOT NULL,
-    "url" TEXT NOT NULL,
+    "URL" TEXT NOT NULL,
     "description" TEXT,
     "order" INTEGER,
     "propertyId" INTEGER NOT NULL,
@@ -130,18 +135,27 @@ CREATE TABLE "FloorPlanGallery" (
 CREATE TABLE "Address" (
     "id" SERIAL NOT NULL,
     "street" TEXT NOT NULL,
-    "number" INTEGER,
+    "propertyNumber" TEXT,
     "complement" TEXT,
     "neighborhood" TEXT NOT NULL,
     "city" TEXT,
-    "state" TEXT,
     "zipCode" TEXT,
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
     "zoneId" INTEGER,
+    "stateId" INTEGER,
     "propertyId" INTEGER NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "State" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "UF" TEXT NOT NULL,
+
+    CONSTRAINT "State_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -171,7 +185,7 @@ CREATE TABLE "Template" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "previewUrl" TEXT,
+    "previewURL" TEXT,
 
     CONSTRAINT "Template_pkey" PRIMARY KEY ("id")
 );
@@ -182,46 +196,6 @@ CREATE TABLE "_SpecialtyToUser" (
     "B" INTEGER NOT NULL,
 
     CONSTRAINT "_SpecialtyToUser_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "_PropertyToPropertyPurpose" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-
-    CONSTRAINT "_PropertyToPropertyPurpose_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "_PropertyToPropertyStanding" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-
-    CONSTRAINT "_PropertyToPropertyStanding_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "_PropertyToPropertyType" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-
-    CONSTRAINT "_PropertyToPropertyType_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "_PropertyToPropertyTypology" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-
-    CONSTRAINT "_PropertyToPropertyTypology_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "_DeliveryStatusToProperty" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-
-    CONSTRAINT "_DeliveryStatusToProperty_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
@@ -260,6 +234,12 @@ CREATE UNIQUE INDEX "Leisure_name_key" ON "Leisure"("name");
 CREATE UNIQUE INDEX "Address_propertyId_key" ON "Address"("propertyId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "State_name_key" ON "State"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "State_UF_key" ON "State"("UF");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Zone_name_key" ON "Zone"("name");
 
 -- CreateIndex
@@ -278,25 +258,25 @@ CREATE UNIQUE INDEX "Template_name_key" ON "Template"("name");
 CREATE INDEX "_SpecialtyToUser_B_index" ON "_SpecialtyToUser"("B");
 
 -- CreateIndex
-CREATE INDEX "_PropertyToPropertyPurpose_B_index" ON "_PropertyToPropertyPurpose"("B");
-
--- CreateIndex
-CREATE INDEX "_PropertyToPropertyStanding_B_index" ON "_PropertyToPropertyStanding"("B");
-
--- CreateIndex
-CREATE INDEX "_PropertyToPropertyType_B_index" ON "_PropertyToPropertyType"("B");
-
--- CreateIndex
-CREATE INDEX "_PropertyToPropertyTypology_B_index" ON "_PropertyToPropertyTypology"("B");
-
--- CreateIndex
-CREATE INDEX "_DeliveryStatusToProperty_B_index" ON "_DeliveryStatusToProperty"("B");
-
--- CreateIndex
 CREATE INDEX "_LeisureToProperty_B_index" ON "_LeisureToProperty"("B");
 
 -- AddForeignKey
 ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Property" ADD CONSTRAINT "Property_deliveryStatusId_fkey" FOREIGN KEY ("deliveryStatusId") REFERENCES "DeliveryStatus"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Property" ADD CONSTRAINT "Property_propertyTypologyId_fkey" FOREIGN KEY ("propertyTypologyId") REFERENCES "PropertyTypology"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Property" ADD CONSTRAINT "Property_propertyTypeId_fkey" FOREIGN KEY ("propertyTypeId") REFERENCES "PropertyType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Property" ADD CONSTRAINT "Property_propertyStandingId_fkey" FOREIGN KEY ("propertyStandingId") REFERENCES "PropertyStanding"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Property" ADD CONSTRAINT "Property_propertyPurposeId_fkey" FOREIGN KEY ("propertyPurposeId") REFERENCES "PropertyPurpose"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PropertyGallery" ADD CONSTRAINT "PropertyGallery_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -306,6 +286,9 @@ ALTER TABLE "FloorPlanGallery" ADD CONSTRAINT "FloorPlanGallery_propertyId_fkey"
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_zoneId_fkey" FOREIGN KEY ("zoneId") REFERENCES "Zone"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_stateId_fkey" FOREIGN KEY ("stateId") REFERENCES "State"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -321,36 +304,6 @@ ALTER TABLE "_SpecialtyToUser" ADD CONSTRAINT "_SpecialtyToUser_A_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "_SpecialtyToUser" ADD CONSTRAINT "_SpecialtyToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyPurpose" ADD CONSTRAINT "_PropertyToPropertyPurpose_A_fkey" FOREIGN KEY ("A") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyPurpose" ADD CONSTRAINT "_PropertyToPropertyPurpose_B_fkey" FOREIGN KEY ("B") REFERENCES "PropertyPurpose"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyStanding" ADD CONSTRAINT "_PropertyToPropertyStanding_A_fkey" FOREIGN KEY ("A") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyStanding" ADD CONSTRAINT "_PropertyToPropertyStanding_B_fkey" FOREIGN KEY ("B") REFERENCES "PropertyStanding"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyType" ADD CONSTRAINT "_PropertyToPropertyType_A_fkey" FOREIGN KEY ("A") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyType" ADD CONSTRAINT "_PropertyToPropertyType_B_fkey" FOREIGN KEY ("B") REFERENCES "PropertyType"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyTypology" ADD CONSTRAINT "_PropertyToPropertyTypology_A_fkey" FOREIGN KEY ("A") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PropertyToPropertyTypology" ADD CONSTRAINT "_PropertyToPropertyTypology_B_fkey" FOREIGN KEY ("B") REFERENCES "PropertyTypology"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_DeliveryStatusToProperty" ADD CONSTRAINT "_DeliveryStatusToProperty_A_fkey" FOREIGN KEY ("A") REFERENCES "DeliveryStatus"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_DeliveryStatusToProperty" ADD CONSTRAINT "_DeliveryStatusToProperty_B_fkey" FOREIGN KEY ("B") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_LeisureToProperty" ADD CONSTRAINT "_LeisureToProperty_A_fkey" FOREIGN KEY ("A") REFERENCES "Leisure"("id") ON DELETE CASCADE ON UPDATE CASCADE;

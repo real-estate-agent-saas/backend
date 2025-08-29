@@ -78,61 +78,71 @@ model Property {
   updatedAt DateTime @updatedAt
 
   // Relationships
-  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation 1-N (One user can have many properties)
-  userId           Int
-  address          Address? // Relation 1-1 (One property has one address)
-  propertyGallery  PropertyGallery[] // Relation 1-N (One property can have many images)
-  floorPlanGallery FloorPlanGallery[] // Relation 1-N (One property can have many floor plans)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation 1-N (One user can have many properties)
+  userId Int
 
-  // Relations M-N
-  propertyLeisure    Leisure[]
-  propertyPurposes   PropertyPurpose[]
-  propertyStandings  PropertyStanding[]
-  propertyTypes      PropertyType[]
-  propertyTypologies PropertyTypology[]
-  deliveryStatus     DeliveryStatus[]
+  address Address? //  1-1 (One property has one address)
+
+  deliveryStatus   DeliveryStatus? @relation(fields: [deliveryStatusId], references: [id]) // 1-N (One property can have only one DeliveryStatus)
+  deliveryStatusId Int?
+
+  propertyTypology   PropertyTypology? @relation(fields: [propertyTypologyId], references: [id]) // 1-N (One property can have only one PropertyTypology)
+  propertyTypologyId Int?
+
+  propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id]) // 1-N (One property can have only one PropertyType) 
+  propertyTypeId Int?
+
+  propertyStanding   PropertyStanding? @relation(fields: [propertyStandingId], references: [id]) // 1-N (One property can have only one PropertyStanding)
+  propertyStandingId Int?
+
+  propertyPurpose   PropertyPurpose? @relation(fields: [propertyPurposeId], references: [id]) // 1-N (One property can have only one PropertyPurpose)
+  propertyPurposeId Int?
+
+  propertyGallery  PropertyGallery[] //  1-N (One property can have many images)
+  floorPlanGallery FloorPlanGallery[] //  1-N (One property can have many floor plans)
+  propertyLeisure  Leisure[] // M-N (Many properties can have many leisure)
 }
 
 model PropertyPurpose {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  properties Property[]
+  properties Property[] // 1-N (One property can have only one PropertyPurpose)
 }
 
 model PropertyStanding {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  properties Property[]
+  properties Property[] // 1-N (One property can have only one PropertyStanding)
 }
 
 model PropertyType {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  properties Property[]
+  properties Property[] // 1-N (One property can have only one PropertyType)
 }
 
 model PropertyTypology {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  properties Property[]
+  properties Property[] // 1-N (One property can have only one PropertyTypology)
 }
 
 model DeliveryStatus {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  properties Property[]
+  properties Property[] // 1-N (One property can have only one DeliveryStatus)
 }
 
 model Leisure {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  properties Property[]
+  properties Property[] // M-N (Many properties can have many Leisure)
 }
 
 model PropertyGallery {
@@ -153,24 +163,35 @@ model FloorPlanGallery {
 }
 
 model Address {
-  id           Int     @id @default(autoincrement())
-  street       String
-  number       String?
-  complement   String?
-  neighborhood String
-  city         String?
-  state        String?
-  zipCode      String?
-  latitude     Float?
-  longitude    Float?
+  id             Int     @id @default(autoincrement())
+  street         String
+  propertyNumber String?
+  complement     String?
+  neighborhood   String
+  city           String?
+  zipCode        String?
+  latitude       Float?
+  longitude      Float?
 
-  // FK Zone
+  // 1-N (Many address can have only one zone)
   zone   Zone? @relation(fields: [zoneId], references: [id])
   zoneId Int?
+
+  State   State? @relation(fields: [stateId], references: [id])
+  stateId Int?
 
   // relação 1-1 with Property
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId Int      @unique
+}
+
+model State {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  UF   String @unique
+
+  // relação 1-N
+  addresses Address[]
 }
 
 model Zone {

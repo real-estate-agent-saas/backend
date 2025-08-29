@@ -10,8 +10,8 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from './create-address.dto';
-import { PropertyGallery } from './create-propertyGalley.dto';
-import { FloorPlanGallery } from './create-floorPlanGallery.dto';
+import { CreatePropertyGalleryDto } from './create-propertyGalley.dto';
+import { CreateFloorPlanGalleryDto } from './create-floorPlanGallery.dto';
 
 export class CreatePropertyDto {
   @IsOptional()
@@ -25,9 +25,16 @@ export class CreatePropertyDto {
   @IsString()
   @ApiProperty({
     description: 'Título do imóvel',
-    example: 'Apartamento moderno no centro',
+    example: 'Get Home Design',
   })
   title: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Descrição do imóvel',
+    example: 'A menor distância entre Nova York e São Paulo',
+  })
+  description: string;
 
   @IsNumber()
   @ApiProperty({ description: 'Quantidade de quartos', example: 3 })
@@ -47,7 +54,7 @@ export class CreatePropertyDto {
 
   @IsOptional()
   @IsString()
-  youtubeUrl?: string;
+  youtubeURL?: string;
 
   @IsOptional()
   @IsNumber()
@@ -70,46 +77,43 @@ export class CreatePropertyDto {
   isFeatured?: boolean;
 
   @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+  @IsInt()
+  propertyPurposeId?: number;
 
   @IsOptional()
-  @IsNumber()
-  userId?: number;
+  @IsInt()
+  propertyStandingId?: number;
+
+  @IsOptional()
+  @IsInt()
+  propertyTypeId?: number;
+
+  @IsOptional()
+  @IsInt()
+  propertyTypologyId?: number;
+
+  @IsOptional()
+  @IsInt()
+  deliveryStatusId?: number;
 
   @IsOptional()
   @IsArray()
+  @IsInt({ each: true })
   propertyLeisure?: number[];
-
-  @IsOptional()
-  @IsArray()
-  propertyPurposes?: number[];
-
-  @IsOptional()
-  @IsArray()
-  propertyStandings?: number[];
-
-  @IsOptional()
-  @IsArray()
-  propertyTypes?: number[];
-
-  @IsOptional()
-  @IsArray()
-  propertyTypologies?: number[];
-
-  @IsOptional()
-  @IsArray()
-  deliveryStatus?: number[];
 
   // --------------------------------------- NESTED VALIDATIONS -----------------------
 
-  @ValidateNested()
-  @Type(() => PropertyGallery)
-  propertyGallery: PropertyGallery;
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePropertyGalleryDto)
+  propertyGallery?: CreatePropertyGalleryDto[];
 
-  @ValidateNested()
-  @Type(() => FloorPlanGallery)
-  floorPlanGallery: FloorPlanGallery;
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateFloorPlanGalleryDto)
+  floorPlanGallery?: CreateFloorPlanGalleryDto[];
 
   @ValidateNested()
   @Type(() => CreateAddressDto)

@@ -1,16 +1,12 @@
 import { IsString, IsOptional, IsInt } from 'class-validator';
 
-export class PropertyGallery {
+export class CreatePropertyGalleryDto {
   @IsOptional()
   @IsInt()
   id?: number;
 
   @IsString()
   URL: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
 
   @IsOptional()
   @IsInt()
