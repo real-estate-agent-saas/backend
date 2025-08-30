@@ -194,13 +194,68 @@ export class PropertyService {
             },
           },
         }),
-        ...(propertyPurposeId && {
-          propertyPurpose: {
-            update: {
-              id: propertyPurposeId,
-            },
+
+        //------- FK connections ------
+        ...(propertyPurposeId && { propertyPurposeId }),
+        ...(propertyStandingId && { propertyStandingId }),
+        ...(propertyTypeId && { propertyTypeId }),
+        ...(propertyTypologyId && { propertyTypologyId }),
+        ...(deliveryStatusId && { deliveryStatusId }),
+        ...(propertyLeisure && {
+          propertyLeisure: {
+            set: propertyLeisure.map((id) => ({ id })),
           },
         }),
+
+        //------ Images Relationship ------
+        propertyGallery: {
+          // First: Removes all gallery that is not provided on the array
+          deleteMany: {
+            id: {
+              // Ensures that the array is not going to be undefined making it number[] and not (number | undefined)[]
+              // This is necessary because gallery is optional
+              notIn: propertyGallery
+                ?.map((g) => g.id)
+                .filter((id): id is number => typeof id === 'number'),
+            },
+          },
+
+          // Second: Maps the ID with the ones on the database
+          // If the ID mathches, updates it, else creates it
+          upsert: propertyGallery
+            ?.map((gallery) => ({  
+              where: { id: gallery.id ?? 0}, // If there is no ID tries with 0 it doesnt exist on database then create it
+              update: {
+                order: gallery.order,
+              },
+              create: {
+                URL: gallery.URL,
+                order: gallery.order,
+              },
+            })),
+        },
+
+        floorPlanGallery: {
+          deleteMany: {
+            id: {
+              notIn: floorPlanGallery
+                ?.map((g) => g.id)
+                .filter((id): id is number => typeof id === 'number'),
+            },
+          },
+          upsert: floorPlanGallery?.map((gallery) => ({
+              where: { id: gallery.id ?? 0 },
+              update: {
+                description: gallery.description,
+                order: gallery.order,
+              },
+              create: {
+                URL: gallery.URL,
+                description: gallery.description,
+                order: gallery.order,
+              },
+            })),
+        },
       };
 
       const property = this.prisma.property.update({

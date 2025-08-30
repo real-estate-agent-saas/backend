@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from './create-address.dto';
-import { CreatePropertyGalleryDto } from './create-propertyGalley.dto';
+import { CreatePropertyGalleryDto } from './create-propertyGallery.dto';
 import { CreateFloorPlanGalleryDto } from './create-floorPlanGallery.dto';
 
 export class CreatePropertyDto {
