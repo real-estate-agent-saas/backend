@@ -22,11 +22,18 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 
-
 @ApiTags('Properties')
 @Controller('property')
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
+
+  @Get('getFeatured')
+  @ApiOperation({
+    summary: 'Retorna todos os imóveis em destaque do usuário logado',
+  })
+  getFeatureds(@CurrentUser() user: User) {
+    return this.propertyService.getFeatureds(user.id);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Cadastra um imóvel' })

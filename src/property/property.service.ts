@@ -62,6 +62,10 @@ export class PropertyService {
       ...propertyData
     } = createPropertyDto;
 
+    if(!address) {
+      throw new BadRequestException("Enderço é necessário para criação do imóvel")
+    }
+
     const propertyInput: Prisma.PropertyCreateInput = {
       // Basic property data and user connection
       ...propertyData,
@@ -222,17 +226,16 @@ export class PropertyService {
 
           // Second: Maps the ID with the ones on the database
           // If the ID mathches, updates it, else creates it
-          upsert: propertyGallery
-            ?.map((gallery) => ({  
-              where: { id: gallery.id ?? 0}, // If there is no ID tries with 0 it doesnt exist on database then create it
-              update: {
-                order: gallery.order,
-              },
-              create: {
-                URL: gallery.URL,
-                order: gallery.order,
-              },
-            })),
+          upsert: propertyGallery?.map((gallery) => ({
+            where: { id: gallery.id ?? 0 }, // If there is no ID tries with 0 it doesnt exist on database then create it
+            update: {
+              order: gallery.order,
+            },
+            create: {
+              URL: gallery.URL,
+              order: gallery.order,
+            },
+          })),
         },
 
         floorPlanGallery: {
@@ -244,17 +247,17 @@ export class PropertyService {
             },
           },
           upsert: floorPlanGallery?.map((gallery) => ({
-              where: { id: gallery.id ?? 0 },
-              update: {
-                description: gallery.description,
-                order: gallery.order,
-              },
-              create: {
-                URL: gallery.URL,
-                description: gallery.description,
-                order: gallery.order,
-              },
-            })),
+            where: { id: gallery.id ?? 0 },
+            update: {
+              description: gallery.description,
+              order: gallery.order,
+            },
+            create: {
+              URL: gallery.URL,
+              description: gallery.description,
+              order: gallery.order,
+            },
+          })),
         },
       };
 
@@ -291,7 +294,7 @@ export class PropertyService {
   async findAll(userId: number) {
     const properties = await this.prisma.property.findMany({
       where: {
-        userId: userId, // Logged in user
+        userId: userId,
       },
       include: {
         address: true,
@@ -357,5 +360,32 @@ export class PropertyService {
         propertyLeisure: true,
       },
     });
+  }
+
+  //---------------------------------------------------------- Returns featured properties  -------------------------------------------
+  async getFeatureds(userId: number) {
+    const featuredProperties = await this.prisma.property.findMany({
+      where: {
+        userId: userId,
+        isFeatured: true,
+      },
+      include: {
+        address: true,
+        deliveryStatus: true,
+        propertyPurpose: true,
+        propertyStanding: true,
+        propertyType: true,
+        propertyTypology: true,
+        floorPlanGallery: true,
+        propertyGallery: true,
+        propertyLeisure: true,
+      }
+    });
+
+    if(!featuredProperties) {
+      throw new NotFoundException("Nenhum imóvel em destaque encontrado")
+    }
+
+    return featuredProperties;
   }
 }
