@@ -6,13 +6,15 @@ import {
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma, User } from '@prisma/client';
-import { connect } from 'http2';
+import { Prisma } from '@prisma/client';
+import { DynamicWebsiteService } from 'src/dynamic-website/dynamic-website.service';
 
 @Injectable()
 export class PropertyService {
-  constructor(private readonly prisma: PrismaService) {} // Inject PrismaService to interact with the database
-
+  constructor(
+    private readonly prisma: PrismaService, 
+    private readonly dynamicWebsite: DynamicWebsiteService,
+  ) {}
   //------------------------------------ (HELPER) Verifies if the property exists and belongs to the current user -----------------------------------
   private async findUserProperty(
     propertyId: number,
@@ -47,6 +49,12 @@ export class PropertyService {
     return property;
   }
 
+  //------------------------------------ (HELPER) Gets userId based on his slug -----------------------------------
+
+  async getUserIdBySlug(){
+
+  }
+
   //---------------------------------------------------- Creates a property with a new address -----------------------------
   async create(createPropertyDto: CreatePropertyDto, userId: number) {
     const {
@@ -62,8 +70,10 @@ export class PropertyService {
       ...propertyData
     } = createPropertyDto;
 
-    if(!address) {
-      throw new BadRequestException("Enderço é necessário para criação do imóvel")
+    if (!address) {
+      throw new BadRequestException(
+        'Enderço é necessário para criação do imóvel',
+      );
     }
 
     const propertyInput: Prisma.PropertyCreateInput = {
@@ -363,10 +373,9 @@ export class PropertyService {
   }
 
   //---------------------------------------------------------- Returns featured properties  -------------------------------------------
-  async getFeatureds(userId: number) {
+  async getFeatureds(slug: string) {
     const featuredProperties = await this.prisma.property.findMany({
       where: {
-        userId: userId,
         isFeatured: true,
       },
       include: {
@@ -379,11 +388,11 @@ export class PropertyService {
         floorPlanGallery: true,
         propertyGallery: true,
         propertyLeisure: true,
-      }
+      },
     });
 
-    if(!featuredProperties) {
-      throw new NotFoundException("Nenhum imóvel em destaque encontrado")
+    if (!featuredProperties) {
+      throw new NotFoundException('Nenhum imóvel em destaque encontrado');
     }
 
     return featuredProperties;

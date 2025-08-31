@@ -1,11 +1,11 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateDinamicWebsiteDto } from './create-dinamic-website.dto';
+import { CreateDynamicWebsiteDto } from './create-dynamic-website.dto';
 import { IsOptional } from 'class-validator';
 import { UpdateCustomDomainDto } from './update-custom-domain.dto';
 import { UpdateSlugDto } from './update-slug.dto';
 
-export class UpdateDinamicWebsiteDto extends PartialType(
-  CreateDinamicWebsiteDto,
+export class UpdateDynamicWebsiteDto extends PartialType(
+  CreateDynamicWebsiteDto,
 ) {
   // For page exhibition
   @IsOptional()

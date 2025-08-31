@@ -29,10 +29,10 @@ export class PropertyController {
 
   @Get('getFeatured')
   @ApiOperation({
-    summary: 'Retorna todos os imóveis em destaque do usuário logado',
+    summary: 'Retorna todos os imóveis em destaque baseado no slug do corretor',
   })
-  getFeatureds(@CurrentUser() user: User) {
-    return this.propertyService.getFeatureds(user.id);
+  getFeatureds(@Param() slug: string) {
+    return this.propertyService.getFeatureds(slug);
   }
 
   @Post()

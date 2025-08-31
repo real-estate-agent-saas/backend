@@ -3,15 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateDinamicWebsiteDto } from './dto/create-dinamic-website.dto';
-import { UpdateDinamicWebsiteDto } from './dto/update-dinamic-website.dto';
-import { RESERVED_SLUGS } from 'src/dinamic-website/constants/reserved-slugs';
-import { UpdateSlugDto } from 'src/dinamic-website/dto/update-slug.dto';
+import { CreateDynamicWebsiteDto } from './dto/create-dynamic-website.dto';
+import { UpdateDynamicWebsiteDto } from './dto/update-dynamic-website.dto';
+import { RESERVED_SLUGS } from 'src/dynamic-website/constants/reserved-slugs';
+import { UpdateSlugDto } from 'src/dynamic-website/dto/update-slug.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class DinamicWebsiteService {
+export class DynamicWebsiteService {
   constructor(private readonly prisma: PrismaService) {}
 
   // ---------------------------------------------------- Auxiliary function to validate slug ------------------------------------------------
@@ -28,7 +28,7 @@ export class DinamicWebsiteService {
     // Verifies if slug is not a reserved word
     this.validateSlug(slug);
 
-    const existingSlug = await this.prisma.dinamicWebsite.findFirst({
+    const existingSlug = await this.prisma.dynamicWebsite.findFirst({
       where: {
         slug: slug,
       },
@@ -42,7 +42,7 @@ export class DinamicWebsiteService {
 
   // ---------------------------------------------------- Get user slug ------------------------------------------------
   async getSlug(id: number) {
-    return this.prisma.dinamicWebsite.findUnique({
+    return this.prisma.dynamicWebsite.findUnique({
       where: { id },
       select: {
         slug: true,
@@ -58,7 +58,7 @@ export class DinamicWebsiteService {
     this.validateSlug(slug);
 
     try {
-      return await this.prisma.dinamicWebsite.update({
+      return await this.prisma.dynamicWebsite.update({
         where: { id },
         data: { slug },
         select: {
@@ -78,7 +78,7 @@ export class DinamicWebsiteService {
 
   // ---------------------------------------------------- Get user data based on slug ------------------------------------------------
   async getUserBasedOnSlug(slug: string) {
-    const existingSlug = await this.prisma.dinamicWebsite.findUnique({
+    const existingSlug = await this.prisma.dynamicWebsite.findUnique({
       where: { slug },
       include: {
         user: true,
@@ -92,17 +92,35 @@ export class DinamicWebsiteService {
     return existingSlug;
   }
 
-  // ---------------------------------------------------- Checks if the slug exists ------------------------------------------------
+  // ---------------------------------------------------- Returns a dynamic website based on slug ------------------------------------------------
   async findOne(slug: string) {
-    const dinamicWebsite = await this.prisma.dinamicWebsite.findUnique({
+    const dynamicWebsite = await this.prisma.dynamicWebsite.findUnique({
       where: { slug },
       include: {
-        template: true
-      }
+        template: true,
+        user: {
+          select: {
+            name: true,
+            tradingName: true,
+            publicEmail: true,
+            whatsapp: true,
+            phone: true,
+            facebook: true,
+            instagram: true,
+            linkedin: true,
+            profileImage: true,
+            bio: true,
+            careerStartDate: true,
+            creci: true,
+            gender: true,
+            specialties: true
+          },
+        },
+      },
     });
 
-    if (dinamicWebsite) {
-      return dinamicWebsite;
+    if (dynamicWebsite) {
+      return dynamicWebsite;
     }
 
     throw new NotFoundException('Website não encontrado');

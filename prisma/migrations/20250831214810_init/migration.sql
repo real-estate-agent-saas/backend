@@ -167,7 +167,7 @@ CREATE TABLE "Zone" (
 );
 
 -- CreateTable
-CREATE TABLE "DinamicWebsite" (
+CREATE TABLE "DynamicWebsite" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "templateId" INTEGER NOT NULL,
@@ -177,7 +177,7 @@ CREATE TABLE "DinamicWebsite" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "DinamicWebsite_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "DynamicWebsite_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -243,13 +243,13 @@ CREATE UNIQUE INDEX "State_UF_key" ON "State"("UF");
 CREATE UNIQUE INDEX "Zone_name_key" ON "Zone"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DinamicWebsite_userId_key" ON "DinamicWebsite"("userId");
+CREATE UNIQUE INDEX "DynamicWebsite_userId_key" ON "DynamicWebsite"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DinamicWebsite_slug_key" ON "DinamicWebsite"("slug");
+CREATE UNIQUE INDEX "DynamicWebsite_slug_key" ON "DynamicWebsite"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DinamicWebsite_customDomain_key" ON "DinamicWebsite"("customDomain");
+CREATE UNIQUE INDEX "DynamicWebsite_customDomain_key" ON "DynamicWebsite"("customDomain");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Template_name_key" ON "Template"("name");
@@ -294,10 +294,10 @@ ALTER TABLE "Address" ADD CONSTRAINT "Address_stateId_fkey" FOREIGN KEY ("stateI
 ALTER TABLE "Address" ADD CONSTRAINT "Address_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DinamicWebsite" ADD CONSTRAINT "DinamicWebsite_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "DynamicWebsite" ADD CONSTRAINT "DynamicWebsite_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DinamicWebsite" ADD CONSTRAINT "DinamicWebsite_templateId_fkey" FOREIGN KEY ("templateId") REFERENCES "Template"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DynamicWebsite" ADD CONSTRAINT "DynamicWebsite_templateId_fkey" FOREIGN KEY ("templateId") REFERENCES "Template"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_SpecialtyToUser" ADD CONSTRAINT "_SpecialtyToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Specialty"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -35,7 +35,7 @@ model User {
   // Relationships
   specialties    Specialty[] // User Specialties M-N (Many users can have many specialties)
   properties     Property[] // User Properties 1-N (One user can have many properties)
-  dinamicWebsite DinamicWebsite? // User Dinamic Website 1-1 (One user can have one dinamic website)
+  dynamicWebsite DynamicWebsite? // User dynamic Website 1-1 (One user can have one dynamic website)
 
   // Date control
   createdAt DateTime @default(now())
@@ -202,16 +202,16 @@ model Zone {
   addresses Address[]
 }
 
-//---------------------------------------------------------- (Dinamic Website)  ------------------------------------------------------------------
+//---------------------------------------------------------- (dynamic Website)  ------------------------------------------------------------------
 
-model DinamicWebsite {
+model DynamicWebsite {
   id     Int  @id @default(autoincrement())
   userId Int  @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade) // User relation 1-1 (One user can have one dinamic website)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade) // User relation 1-1 (One user can have one dynamic website)
 
   // Visual settings
   templateId Int
-  template   Template @relation(fields: [templateId], references: [id]) // Template relation 1-N (One template can be used by many dinamic websites)
+  template   Template @relation(fields: [templateId], references: [id]) // Template relation 1-N (One template can be used by many dynamic websites)
   logo       String?
 
   // Domain
@@ -222,11 +222,11 @@ model DinamicWebsite {
   updatedAt DateTime @updatedAt
 }
 
-//---------------------------------------------------------- (Templates for Dinamic Websites)  ------------------------------------------------------------------
+//---------------------------------------------------------- (Templates for dynamic Websites)  ------------------------------------------------------------------
 model Template {
   id          Int              @id @default(autoincrement())
   name        String           @unique
   description String?
   previewURL  String?
-  sites       DinamicWebsite[] // Dinamic Website relation 1-N (One template can be used by many dinamic websites)
+  sites       DynamicWebsite[] // Dynamic Website relation 1-N (One template can be used by many Dynamic websites)
 }

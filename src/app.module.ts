@@ -11,17 +11,17 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { DinamicWebsiteModule } from './dinamic-website/dinamic-website.module';
+import { DynamicWebsiteModule } from './dynamic-website/dynamic-website.module';
 import { TemplateModule } from './template/template.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), // Carrega as variáveis de ambiente do arquivo .env
+    ConfigModule.forRoot({ isGlobal: true }), // Loads .env variables
     AuthModule,
     PropertyModule,
     UserModule,
     PrismaModule,
-    DinamicWebsiteModule,
+    DynamicWebsiteModule,
     TemplateModule,
   ],
   controllers: [AppController, AuthController],
