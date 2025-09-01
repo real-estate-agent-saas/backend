@@ -7,6 +7,5 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [DynamicWebsiteController],
   providers: [DynamicWebsiteService],
-  exports: [DynamicWebsiteService],
 })
 export class DynamicWebsiteModule {}

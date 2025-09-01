@@ -21,18 +21,20 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 // DTO
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
+import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
 @ApiTags('Properties')
 @Controller('property')
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
-  @Get('getFeatured/:slug')
+  @IsPublic()
+  @Post('getFeatured')
   @ApiOperation({
     summary: 'Retorna todos os imóveis em destaque baseado no slug do corretor',
   })
-  getFeatured(@Param('slug') slug: string) {
-    return this.propertyService.getFeatured(slug);
+  getFeatured(@Body('userId') userId: number) {
+    return this.propertyService.getFeatured(userId);
   }
 
   @Post()

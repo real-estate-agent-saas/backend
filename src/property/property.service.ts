@@ -8,13 +8,11 @@ import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { DynamicWebsiteService } from 'src/dynamic-website/dynamic-website.service';
+import { use } from 'passport';
 
 @Injectable()
 export class PropertyService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly dynamicWebsite: DynamicWebsiteService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   //------------------------------------ (HELPER) Verifies if the property exists and belongs to the current user -----------------------------------
   private async findUserProperty(
@@ -368,10 +366,10 @@ export class PropertyService {
   }
 
   //---------------------------------------------------------- Returns featured properties  -------------------------------------------
-  async getFeatured(slug: string) {
-    // Gets user ID from dynamic-website service to use it on query
-    const userId = await this.dynamicWebsite.getUserIdBasedOnSlug(slug);
-
+  async getFeatured(userId: number) {
+    if (!userId) {
+      throw new BadRequestException('O userId é obrigatório');
+    }
     const featuredProperties = await this.prisma.property.findMany({
       where: {
         userId: userId,
@@ -382,15 +380,19 @@ export class PropertyService {
         coverImage: true,
         title: true,
         price: true,
+        userId: true,
         address: {
           select: {
             city: true,
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
-    if (!featuredProperties) {
+    if (featuredProperties.length === 0) {
       throw new NotFoundException('Nenhum imóvel em destaque encontrado');
     }
 
