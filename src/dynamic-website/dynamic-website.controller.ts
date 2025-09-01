@@ -51,8 +51,8 @@ export class DynamicWebsiteController {
   @Get('slug/currentSlug')
   @ApiOperation({ summary: 'Pega o slug do corretor logado' })
   @ApiResponse({ status: 200, description: 'Slug encontrado com sucesso' })
-  getSlug(@CurrentUser() user: User) {
-    return this.dynamicWebsiteService.getSlug(user.id);
+  getUserSlug(@CurrentUser() user: User) {
+    return this.dynamicWebsiteService.getUserSlug(user.id);
   }
 
   // ---------------------------------------------------- Updates user slug ------------------------------------------------
@@ -61,8 +61,8 @@ export class DynamicWebsiteController {
     summary: 'Atualiza o slug do corretor se não existir outro igual',
   })
   @ApiResponse({ status: 200, description: 'Slug atualizado com sucesso' })
-  updateSlug(@CurrentUser() user: User, @Body() slug: UpdateSlugDto) {
-    return this.dynamicWebsiteService.updateSlug(user.id, slug);
+  updateUserSlug(@CurrentUser() user: User, @Body() slug: UpdateSlugDto) {
+    return this.dynamicWebsiteService.updateUserSlug(user.id, slug);
   }
 
   // -------------------------------------------- Get user data based on his slug ------------------------------------------------
@@ -77,5 +77,19 @@ export class DynamicWebsiteController {
   })
   getUserBasedOnSlug(@Param('slug') slug: string) {
     return this.dynamicWebsiteService.getUserBasedOnSlug(slug);
+  }
+
+  // -------------------------------------------- Get user data based on his slug ------------------------------------------------
+  @IsPublic()
+  @Get()
+  @ApiOperation({
+    summary: 'Busca o ID do corretor para realizar consultas na página dinâmica',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'ID do usuário retornado com sucesso!',
+  })
+  getUserIdBasedOnSlug(@Param() slug: string) {
+    return this.dynamicWebsiteService.getUserIdBasedOnSlug(slug);
   }
 }

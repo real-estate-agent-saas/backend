@@ -12,9 +12,10 @@ import { DynamicWebsiteService } from 'src/dynamic-website/dynamic-website.servi
 @Injectable()
 export class PropertyService {
   constructor(
-    private readonly prisma: PrismaService, 
+    private readonly prisma: PrismaService,
     private readonly dynamicWebsite: DynamicWebsiteService,
   ) {}
+
   //------------------------------------ (HELPER) Verifies if the property exists and belongs to the current user -----------------------------------
   private async findUserProperty(
     propertyId: number,
@@ -47,12 +48,6 @@ export class PropertyService {
     }
 
     return property;
-  }
-
-  //------------------------------------ (HELPER) Gets userId based on his slug -----------------------------------
-
-  async getUserIdBySlug(){
-
   }
 
   //---------------------------------------------------- Creates a property with a new address -----------------------------
@@ -373,21 +368,25 @@ export class PropertyService {
   }
 
   //---------------------------------------------------------- Returns featured properties  -------------------------------------------
-  async getFeatureds(slug: string) {
+  async getFeatured(slug: string) {
+    // Gets user ID from dynamic-website service to use it on query
+    const userId = await this.dynamicWebsite.getUserIdBasedOnSlug(slug);
+
     const featuredProperties = await this.prisma.property.findMany({
       where: {
+        userId: userId,
         isFeatured: true,
       },
-      include: {
-        address: true,
-        deliveryStatus: true,
-        propertyPurpose: true,
-        propertyStanding: true,
-        propertyType: true,
-        propertyTypology: true,
-        floorPlanGallery: true,
-        propertyGallery: true,
-        propertyLeisure: true,
+      select: {
+        id: true,
+        coverImage: true,
+        title: true,
+        price: true,
+        address: {
+          select: {
+            city: true,
+          },
+        },
       },
     });
 

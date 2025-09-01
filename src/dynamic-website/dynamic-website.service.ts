@@ -40,8 +40,8 @@ export class DynamicWebsiteService {
     return { available: true };
   }
 
-  // ---------------------------------------------------- Get user slug ------------------------------------------------
-  async getSlug(id: number) {
+  // ---------------------------------------------------- Gets user logged in slug ------------------------------------------------
+  async getUserSlug(id: number) {
     return this.prisma.dynamicWebsite.findUnique({
       where: { id },
       select: {
@@ -50,8 +50,8 @@ export class DynamicWebsiteService {
     });
   }
 
-  // ---------------------------------------------------- Updates user slug ------------------------------------------------
-  async updateSlug(id: number, slugDto: UpdateSlugDto) {
+  // ---------------------------------------------------- Updates user logged in slug ------------------------------------------------
+  async updateUserSlug(id: number, slugDto: UpdateSlugDto) {
     const slug = slugDto.slug.toLowerCase();
 
     // Verifies if slug is not a reserved word
@@ -92,6 +92,22 @@ export class DynamicWebsiteService {
     return existingSlug;
   }
 
+  // ---------------------------------------------------- Get user ID based on slug ------------------------------------------------
+  async getUserIdBasedOnSlug(slug: string) {
+    const user = await this.prisma.dynamicWebsite.findUnique({
+      where: { slug },
+      select: {
+        userId: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Slug não encontrado');
+    }
+
+    return user.userId;
+  }
+
   // ---------------------------------------------------- Returns a dynamic website based on slug ------------------------------------------------
   async findOne(slug: string) {
     const dynamicWebsite = await this.prisma.dynamicWebsite.findUnique({
@@ -113,7 +129,7 @@ export class DynamicWebsiteService {
             careerStartDate: true,
             creci: true,
             gender: true,
-            specialties: true
+            specialties: true,
           },
         },
       },

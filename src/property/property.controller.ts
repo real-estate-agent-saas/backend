@@ -27,12 +27,12 @@ import { UpdatePropertyDto } from './dto/update-property.dto';
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
-  @Get('getFeatured')
+  @Get('getFeatured/:slug')
   @ApiOperation({
     summary: 'Retorna todos os imóveis em destaque baseado no slug do corretor',
   })
-  getFeatureds(@Param() slug: string) {
-    return this.propertyService.getFeatureds(slug);
+  getFeatured(@Param('slug') slug: string) {
+    return this.propertyService.getFeatured(slug);
   }
 
   @Post()
