@@ -1,4 +1,4 @@
-<h1 align="center" style="font-weight: bold;">Real Estate Agent SaaS - Backend</h1>
+<h1 align="center" style="font-weight: bold;">Real Estate Agent SaaS - Backend ⚙️</h1>
 
 <p align="center">
  <a href="#tech">Technologies</a> • 
@@ -61,29 +61,18 @@ Here you can list the main routes of your API, and what are their expected reque
 ​
 | route | description  
 |----------------------|-----------------------------------------------------
-| <kbd>GET /authenticate</kbd> | retrieves user info see [response details](#get-auth-detail)
-| <kbd>POST /authenticate</kbd> | authenticate user into the api see [request details](#post-auth-detail)
+| <kbd>POST /user</kbd> | Registers an User [request details](#post-user)
+| <kbd>POST /login</kbd> | Logs in giving user a JWT Token [request details](#post-login)
 
-<h3 id="get-auth-detail">GET /authenticate</h3>
-
-**RESPONSE**
-
-```json
-{
-  "name": "Fernanda Kipper",
-  "age": 20,
-  "email": "her-email@gmail.com"
-}
-```
-
-<h3 id="post-auth-detail">POST /authenticate</h3>
+<h3 id="post-user">POST /user</h3>
 
 **REQUEST**
 
 ```json
 {
-  "username": "fernandakipper",
-  "password": "4444444"
+  "name": "Ricardo Hemmel",
+  "email": "ricardo56@hotmail.com",
+  "password": "Teste123@"
 }
 ```
 
@@ -91,7 +80,34 @@ Here you can list the main routes of your API, and what are their expected reque
 
 ```json
 {
-  "token": "OwoMRHsaQwyAgVoc3OXmL1JhMVUYXGGBbCTK0GBgiYitwQwjf0gVoBmkbuyy0pSi"
+  "createdUser": {
+    "id": 6,
+    "name": "Ricardo Hemmel",
+    "email": "ricardo56@hotmail.com"
+  }
+}
+```
+
+<h3 id="post-login">POST /login</h3>
+
+**REQUEST**
+
+```json
+{
+  "email": "ricardo56@hotmail.com",
+  "password": "Teste123@"
+}
+```
+
+**RESPONSE**
+
+```json
+{
+  "message": "Login realizado com sucesso"
+}
+
+{
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoia29tdWdpQGNvcnJldG9yYS5jb20iLCJuYW1lIjoiS29tdWdpIiwiaWF0IjoxNzU2OTEwNzQwLCJleHAiOjE3NTk1MDI3NDB9.lxj2vsihH0evQ1sPwn-7yxe2hpA-ZuHrNfgU2dbxHrs"
 }
 ```
 
@@ -121,7 +137,7 @@ Special thank you for all people that contributed for this project.
       <a href="https://github.com/nhengler">
         <img src="https://avatars.githubusercontent.com/u/111945954?v=4" width="100px;" alt="Foto do Steve Jobs"/><br>
         <sub>
-          <b>Steve Jobs</b>
+          <b>Nicolas Hengler</b>
         </sub>
       </a>
     </td>

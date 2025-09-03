@@ -39,11 +39,15 @@ export class UserService {
           },
         },
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      }
     });
 
     return {
-      ...createdUser,
-      password: undefined,
+      createdUser
     };
   }
 
