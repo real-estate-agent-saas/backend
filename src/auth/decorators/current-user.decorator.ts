@@ -1,6 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from 'src/user/entities/user.entity';
+
 import { AuthRequest } from '../models/AuthRequest';
+import { User } from 'src/domain/entities/user.entity';
 
 // Esse decorator é usado para acessar o usuário autenticado em qualquer lugar do código
 export const CurrentUser = createParamDecorator(

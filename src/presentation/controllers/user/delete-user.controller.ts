@@ -2,7 +2,8 @@ import { Controller, Delete } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { DeleteUserUseCase } from "src/application/use-cases/user/delete-user.usecase";
 import { CurrentUser } from "src/auth/decorators/current-user.decorator";
-import { User } from "src/user/entities/user.entity";
+import { User } from "src/domain/entities/user.entity";
+
 
 @ApiTags('Users')
 @Controller('user')

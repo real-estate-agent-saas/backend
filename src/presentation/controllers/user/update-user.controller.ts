@@ -3,7 +3,8 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UpdateUserDto } from "src/application/dtos/update-user.dto";
 import { UpdateUserUseCase } from "src/application/use-cases/user/update-user.usecase";
 import { CurrentUser } from "src/auth/decorators/current-user.decorator";
-import { User } from "src/user/entities/user.entity";
+import { User } from "src/domain/entities/user.entity";
+
 
 @ApiTags('Users')
 @Controller('user')
