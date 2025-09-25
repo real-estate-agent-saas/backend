@@ -393,7 +393,7 @@ export class PropertyService {
     });
 
     if (featuredProperties.length === 0) {
-      throw new NotFoundException('Nenhum imóvel em destaque encontrado');
+      return [];
     }
 
     return featuredProperties;
