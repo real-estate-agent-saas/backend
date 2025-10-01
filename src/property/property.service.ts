@@ -18,6 +18,11 @@ export class PropertyService {
     userId: number,
     include?: Prisma.PropertyInclude, // Specifies which fields to bring if the property is found
   ) {
+
+    if(!propertyId || !userId) {
+      throw new BadRequestException("ID do usuário e do Imóvel são obrigatórios!")
+    }
+
     const property = await this.prisma.property.findFirst({
       where: {
         id: propertyId,
@@ -384,7 +389,7 @@ export class PropertyService {
   }
   //------------------------------------------------------------ Gets (ONE) property by Slug -------------------------------------
   async findOneBySlug(userId: number, propertyId: number) {
-    return this.findUserProperty(propertyId, userId, {
+    const property = await this.findUserProperty(propertyId, userId, {
       propertyPurpose: true,
       propertyStanding: true,
       propertyType: true,
@@ -395,5 +400,10 @@ export class PropertyService {
       floorPlanGallery: true,
       propertyLeisure: true,
     });
+
+    console.log("ID do usuário: ", userId, "ID do Imóvel: ", propertyId);
+    console.log("Resultado de Property: ", property);
+
+    return property;
   }
 }

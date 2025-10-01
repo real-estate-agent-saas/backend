@@ -43,9 +43,10 @@ export class PropertyController {
     summary: 'Busca um imóvel específico baseado no slug do site',
   })
   findOneBySlug(
-    @Body('userId') userId: number, propertyId: number
+    @Body('userId') userId: number,
+    @Body('propertyId') propertyId: number
   ) {
-    return this.propertyService.findOne(propertyId, userId);
+    return this.propertyService.findOneBySlug(userId, propertyId);
   }
 
   @Post()
