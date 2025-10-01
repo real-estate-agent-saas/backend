@@ -210,6 +210,7 @@ model DynamicWebsite {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade) // User relation 1-1 (One user can have one dynamic website)
 
   // Visual settings
+  name       String?
   templateId Int
   template   Template @relation(fields: [templateId], references: [id]) // Template relation 1-N (One template can be used by many dynamic websites)
   logo       String?

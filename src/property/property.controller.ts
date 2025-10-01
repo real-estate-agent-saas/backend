@@ -29,12 +29,23 @@ export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
   @IsPublic()
-  @Post('getFeatured')
+  @Post('getFeaturedBySlug')
   @ApiOperation({
-    summary: 'Retorna todos os imóveis em destaque baseado no slug do corretor',
+    summary: 'Retorna todos os imóveis em destaque baseado no slug do site',
   })
-  getFeatured(@Body('userId') userId: number) {
-    return this.propertyService.getFeatured(userId);
+  getFeaturedBySlug(@Body('userId') userId: number) {
+    return this.propertyService.getFeaturedBySlug(userId);
+  }
+
+  @IsPublic()
+  @Post('findOneBySlug')
+  @ApiOperation({
+    summary: 'Busca um imóvel específico baseado no slug do site',
+  })
+  findOneBySlug(
+    @Body('userId') userId: number, propertyId: number
+  ) {
+    return this.propertyService.findOne(propertyId, userId);
   }
 
   @Post()

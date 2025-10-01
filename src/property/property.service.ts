@@ -7,8 +7,6 @@ import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { DynamicWebsiteService } from 'src/dynamic-website/dynamic-website.service';
-import { use } from 'passport';
 
 @Injectable()
 export class PropertyService {
@@ -24,20 +22,6 @@ export class PropertyService {
       where: {
         id: propertyId,
         userId: userId,
-      },
-      include: {
-        address: {
-          include: {
-            zone: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        floorPlanGallery: true,
-        propertyGallery: true,
-        propertyLeisure: true,
       },
     });
 
@@ -366,7 +350,7 @@ export class PropertyService {
   }
 
   //---------------------------------------------------------- Returns featured properties  -------------------------------------------
-  async getFeatured(userId: number) {
+  async getFeaturedBySlug(userId: number) {
     if (!userId) {
       throw new BadRequestException('O userId é obrigatório');
     }
@@ -397,5 +381,19 @@ export class PropertyService {
     }
 
     return featuredProperties;
+  }
+  //------------------------------------------------------------ Gets (ONE) property by Slug -------------------------------------
+  async findOneBySlug(userId: number, propertyId: number) {
+    return this.findUserProperty(propertyId, userId, {
+      propertyPurpose: true,
+      propertyStanding: true,
+      propertyType: true,
+      propertyTypology: true,
+      deliveryStatus: true,
+      address: true,
+      propertyGallery: true,
+      floorPlanGallery: true,
+      propertyLeisure: true,
+    });
   }
 }
